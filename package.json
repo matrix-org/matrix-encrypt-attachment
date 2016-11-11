@@ -1,7 +1,7 @@
 {
   "name": "browser-encrypt-attachment",
-  "version": "0.0.0",
-  "description": "Encrypts attachments as matrix events",
+  "version": "0.1.0",
+  "description": "Browser JavaScript library for encrypting files using webcrypto.",
   "main": "index.js",
   "scripts": {
     "test": "karma start $KARMAFLAGS"
