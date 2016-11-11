@@ -1,25 +1,39 @@
 describe("DecryptAttachment", function() {
     var testVectors = [
-        ["gxI1eiER6jOxtn6y/gX+hg", {
-            key: {
-                alg: "A256GCM",
-                k: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                kty: "oct",
-                key_ops: ["encrypt","decrypt"],
+        ["", {
+            "hashes": {
+                "sha256": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU"
             },
-            iv: "AAAAAAAAAAAAAAAAAAAAAA",
-            hashes: { sha256: "YhVyrkrEseY7Zu9Z/UolrKFbTkps0rSirf6MXspgwVo" },
+            "key": {
+                "alg": "A256CTR",
+                "k": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                "key_ops": ["encrypt", "decrypt"],
+                "kty": "oct"
+            },
+            "iv": "AAAAAAAAAAAAAAAAAAAAAA"
         }, ""],
-        ["8cviqGwcc+gCiyV6Qwhcc43V/izXoHBKRH9vyw", {
-            iv: "/////////////////////w",
-            key: {
-                kty: "oct",
-                key_ops: ["encrypt", "decrypt" ],
-                k: "__________________________________________8",
-                alg: "A256GCM"
-            },
-            hashes: { sha256: "9vNkVndnOLSsQ5UvmKB/W5g/4ScVYHlSQS3QliU+Xvo" }
+        ["nZxRAVw962fwUQ5/", {
+            "hashes": {
+                "sha256": "geLWS2ptBew5aPLJRTK+QnI3Krdl3UaxN8qfahHWhfc"
+            }, "key": {
+                "alg": "A256CTR",
+                "k": "__________________________________________8",
+                "key_ops": ["encrypt", "decrypt"],
+                "kty": "oct"
+            }, "iv": "/////////////////////w"
         }, "SGVsbG8sIFdvcmxk"],
+        ["tJVNBVJ/vl36UQt4Y5e5myqUL3M8OtjRVQljZ+LlwbJeucRIM7CeKDJGGOjlJ1bqpqUdl6zytXJ3dCyvnUi4eQ", {
+            "hashes": {
+                "sha256": "/K4w3G4zlLK312k66KxNPKDkWCn2QAH5aphAkuncTrQ"
+            },
+            "key": {
+                "kty": "oct",
+                "key_ops": ["encrypt","decrypt"],
+                "k": "__________________________________________8",
+                "alg": "A256CTR"
+            },
+            "iv": "/////////////////////w"
+        }, "YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"]
     ];
 
     testVectors.forEach(function (vector) {
