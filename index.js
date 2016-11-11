@@ -15,7 +15,7 @@ function encryptAttachment(plaintextBuffer) {
     ivArray = window.crypto.getRandomValues(new Uint8Array(16));
     // Load the encryption key.
     return window.crypto.subtle.generateKey(
-        {"name": "AES-GCM", length:256}, true, ["encrypt", "decrypt"]
+        {"name": "AES-CTR", length:256}, true, ["encrypt", "decrypt"]
     ).then(function(generateKeyResult) {
         cryptoKey = generateKeyResult;
         // Export the Key as JWK.
@@ -23,8 +23,9 @@ function encryptAttachment(plaintextBuffer) {
     }).then(function(exportKeyResult) {
         exportedKey = exportKeyResult;
         // Encrypt the input ArrayBuffer.
+        // Use the entire iv as the counter by setting the "length" to 128.
         return window.crypto.subtle.encrypt(
-            {name: "AES-GCM", iv: ivArray}, cryptoKey, plaintextBuffer
+            {name: "AES-CTR", counter: ivArray, length: 128}, cryptoKey, plaintextBuffer
         );
     }).then(function(encryptResult) {
         ciphertextBuffer = encryptResult;
@@ -50,8 +51,8 @@ function encryptAttachment(plaintextBuffer) {
  * Decrypt an attachment.
  * @param {ArrayBuffer} ciphertextBuffer The encrypted attachment data buffer.
  * @param {Object} info The information needed to decrypt the attachment.
- * @param {Object} info.key AES-GCM JWK key object.
- * @param {string} info.iv Base64 encoded AES-GCM IV.
+ * @param {Object} info.key AES-CTR JWK key object.
+ * @param {string} info.iv Base64 encoded 16 byte AES-CTR IV.
  * @param {string} info.hashes.sha256 Base64 encoded SHA-256 hash of the ciphertext.
  * @return {Promise} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
  */
@@ -67,7 +68,7 @@ function decryptAttachment(ciphertextBuffer, info) {
     var expectedSha256base64 = info.hashes.sha256;
     // Load the AES from the "key" key of the info object.
     return window.crypto.subtle.importKey(
-        "jwk", info.key, {"name": "AES-GCM"}, false, ["encrypt", "decrypt"]
+        "jwk", info.key, {"name": "AES-CTR"}, false, ["encrypt", "decrypt"]
     ).then(function (importKeyResult) {
         cryptoKey = importKeyResult;
         // Check the sha256 hash
@@ -76,8 +77,9 @@ function decryptAttachment(ciphertextBuffer, info) {
         if (encodeBase64(new Uint8Array(digestResult)) != expectedSha256base64) {
             throw new Error("Mismatched SHA-256 digest");
         }
+        // Use the entire iv as the counter by setting the "length" to 128.
         return window.crypto.subtle.decrypt(
-            {name: "AES-GCM", iv: ivArray}, cryptoKey, ciphertextBuffer
+            {name: "AES-CTR", counter: ivArray, length: 128}, cryptoKey, ciphertextBuffer
         );
     });
 }
