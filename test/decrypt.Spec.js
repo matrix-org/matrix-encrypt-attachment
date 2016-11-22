@@ -1,6 +1,7 @@
 describe("DecryptAttachment", function() {
     var testVectors = [
         ["", {
+            "v": "v1",
             "hashes": {
                 "sha256": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU"
             },
@@ -13,6 +14,7 @@ describe("DecryptAttachment", function() {
             "iv": "AAAAAAAAAAAAAAAAAAAAAA"
         }, ""],
         ["nZxRAVw962fwUQ5/", {
+            "v": "v1",
             "hashes": {
                 "sha256": "geLWS2ptBew5aPLJRTK+QnI3Krdl3UaxN8qfahHWhfc"
             }, "key": {
@@ -23,8 +25,21 @@ describe("DecryptAttachment", function() {
             }, "iv": "/////////////////////w"
         }, "SGVsbG8sIFdvcmxk"],
         ["tJVNBVJ/vl36UQt4Y5e5myqUL3M8OtjRVQljZ+LlwbJeucRIM7CeKDJGGOjlJ1bqpqUdl6zytXJ3dCyvnUi4eQ", {
+            "iv": "/////////////////////w",
+            "key": {
+                "kty": "oct",
+                "key_ops": [ "encrypt", "decrypt" ],
+                "k": "__________________________________________8",
+                "alg": "A256CTR"
+            },
             "hashes": {
                 "sha256": "/K4w3G4zlLK312k66KxNPKDkWCn2QAH5aphAkuncTrQ"
+             }
+        }, "YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ"],
+        ["tJVNBVJ/vl36UQt4Y5e5m84bRUrQHhcdLPvS/7EkDvlkDLZXamBB6k8THbiawiKZ5Mnq9PZMSSbgOCvmnUBOMA", {
+            "v": "v1",
+            "hashes": {
+                "sha256": "LYG/orOViuFwovJpv2YMLSsmVKwLt7pY3f8SYM7KU5E"
             },
             "key": {
                 "kty": "oct",
