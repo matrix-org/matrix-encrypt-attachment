@@ -23,9 +23,9 @@ function encryptAttachment(plaintextBuffer) {
     }).then(function(exportKeyResult) {
         exportedKey = exportKeyResult;
         // Encrypt the input ArrayBuffer.
-        // Use the entire iv as the counter by setting the "length" to 128.
+        // Use half of the iv as the counter by setting the "length" to 64.
         return window.crypto.subtle.encrypt(
-            {name: "AES-CTR", counter: ivArray, length: 128}, cryptoKey, plaintextBuffer
+            {name: "AES-CTR", counter: ivArray, length: 64}, cryptoKey, plaintextBuffer
         );
     }).then(function(encryptResult) {
         ciphertextBuffer = encryptResult;
@@ -37,6 +37,7 @@ function encryptAttachment(plaintextBuffer) {
         return {
             data: ciphertextBuffer,
             info: {
+                v: "v1",
                 key: exportedKey,
                 iv: encodeBase64(ivArray),
                 hashes: {
@@ -77,9 +78,16 @@ function decryptAttachment(ciphertextBuffer, info) {
         if (encodeBase64(new Uint8Array(digestResult)) != expectedSha256base64) {
             throw new Error("Mismatched SHA-256 digest");
         }
-        // Use the entire iv as the counter by setting the "length" to 128.
+        var counterLength;
+        if (info.v == "v1") {
+            // Version 1 uses a 64 bit counter.
+            counterLength = 64;
+        } else {
+            // Version 0 uses a 128 bit counter.
+            counterLength = 128;
+        }
         return window.crypto.subtle.decrypt(
-            {name: "AES-CTR", counter: ivArray, length: 128}, cryptoKey, ciphertextBuffer
+            {name: "AES-CTR", counter: ivArray, length: counterLength}, cryptoKey, ciphertextBuffer
         );
     });
 }

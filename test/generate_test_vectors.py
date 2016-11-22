@@ -18,18 +18,44 @@ import hashlib
 import json
 import sys
 import base64
+import struct
 
 b64 = lambda x: base64.b64encode(x).rstrip("=")
 b64u = lambda x: base64.urlsafe_b64encode(x).rstrip("=")
 
-def encrypt(key, iv, plaintext):
+
+def encrypt_ctr(key, iv, plaintext, counter_bits):
+    counter1, counter0 = struct.unpack(">QQ", iv)
+    counter = counter0 | (counter1 << 64)
+    limit = 1 << counter_bits
+    low = counter & (limit - 1)
+    high = counter - low
+    result = ""
+    while (len(plaintext) + 15) / 16 + low > limit:
+        iv = struct.pack(">QQ", counter >> 64, counter & ((1 << 64) - 1))
+        encryptor = Cipher(
+            algorithms.AES(key),
+            modes.CTR(iv),
+            backend=default_backend()
+        ).encryptor()
+        size = 16 * (limit - low)
+        result += encryptor.update(plaintext[:size]) + encryptor.finalize()
+        plaintext = plaintext[size:]
+        low = 0
+        counter = high
+
+    iv = struct.pack(">QQ", counter >> 64, counter & ((1<<64) - 1))
     encryptor = Cipher(
         algorithms.AES(key),
         modes.CTR(iv),
         backend=default_backend()
     ).encryptor()
+    result += encryptor.update(plaintext) + encryptor.finalize()
+    return result
 
-    ciphertext = encryptor.update(plaintext) + encryptor.finalize()
+
+def encrypt(key, iv, plaintext, bits=64):
+    ciphertext = encrypt_ctr(key, iv, plaintext, bits)
 
     info = {
         "key": {
@@ -41,10 +67,13 @@ def encrypt(key, iv, plaintext):
         "iv": b64(iv),
         "hashes": { "sha256": b64(hashlib.sha256(ciphertext).digest()) }
     }
+    if bits == 64:
+        info["v"] = "v1"
     return b64(ciphertext), info, b64(plaintext)
 
 json.dump([
     encrypt("\x00"*32, "\x00"*16, ""),
     encrypt("\xFF"*32, "\xFF"*16, "Hello, World"),
+    encrypt("\xFF"*32, "\xFF"*16, "alphanumerically" * 4, 128),
     encrypt("\xFF"*32, "\xFF"*16, "alphanumerically" * 4),
 ], sys.stdout)
