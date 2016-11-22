@@ -1,6 +1,6 @@
 {
   "name": "browser-encrypt-attachment",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Browser JavaScript library for encrypting files using webcrypto.",
   "main": "index.js",
   "scripts": {
