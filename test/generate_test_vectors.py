@@ -54,8 +54,8 @@ def encrypt_ctr(key, iv, plaintext, counter_bits):
     return result
 
 
-def encrypt(key, iv, plaintext):
-    ciphertext = encrypt_ctr(key, iv, plaintext, 128)
+def encrypt(key, iv, plaintext, bits=64):
+    ciphertext = encrypt_ctr(key, iv, plaintext, bits)
 
     info = {
         "key": {
@@ -67,10 +67,13 @@ def encrypt(key, iv, plaintext):
         "iv": b64(iv),
         "hashes": { "sha256": b64(hashlib.sha256(ciphertext).digest()) }
     }
+    if bits == 64:
+        info["v"] = "v1"
     return b64(ciphertext), info, b64(plaintext)
 
 json.dump([
     encrypt("\x00"*32, "\x00"*16, ""),
     encrypt("\xFF"*32, "\xFF"*16, "Hello, World"),
+    encrypt("\xFF"*32, "\xFF"*16, "alphanumerically" * 4, 128),
     encrypt("\xFF"*32, "\xFF"*16, "alphanumerically" * 4),
 ], sys.stdout)
