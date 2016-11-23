@@ -1,4 +1,4 @@
-Changes in [0.3.0](https://github.com/matrix-org/browser-encrypt-attachment/releases/tag/v0.2.0) (2016-11-23)
+Changes in [0.3.0](https://github.com/matrix-org/browser-encrypt-attachment/releases/tag/v0.3.0) (2016-11-23)
 ===================================================================================================
 [Full Changelog](https://github.com/matrix-org/browser-encrypt-attachment/compare/v0.2.0...v0.3.0)
 
