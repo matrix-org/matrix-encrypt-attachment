@@ -2,7 +2,7 @@
   "name": "matrix-encrypt-attachment",
   "version": "0.3.0",
   "description": "Lbrary for encrypting and decrypting file attachments in Matrix.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "karma start $KARMAFLAGS"
   },

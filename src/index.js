@@ -70,7 +70,7 @@ function decryptAttachment(ciphertextBuffer, info) {
     var cryptoKey; // The AES key object.
     var ivArray = decodeBase64(info.iv);
     var expectedSha256base64 = info.hashes.sha256;
-    // Load the AES from the "key" key of the info object.
+    // Load the AES from the "key" key of the inf bao object.
     return window.crypto.subtle.importKey(
         "jwk", info.key, {"name": "AES-CTR"}, false, ["encrypt", "decrypt"]
     ).then(function (importKeyResult) {
