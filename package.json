@@ -20,10 +20,10 @@
   },
   "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
-    "karma": "^1.3.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-firefox-launcher": "^1.0.0",
-    "karma-mocha": "^1.2.0",
-    "mocha": "^3.1.2"
+    "karma": "^6.3.8",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-mocha": "^2.0.1",
+    "mocha": "^9.1.3"
   }
 }
