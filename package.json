@@ -1,24 +1,24 @@
 {
-  "name": "browser-encrypt-attachment",
+  "name": "matrix-encrypt-attachment",
   "version": "0.3.0",
-  "description": "Browser JavaScript library for encrypting files using webcrypto.",
+  "description": "Lbrary for encrypting and decrypting file attachments in Matrix.",
   "main": "index.js",
   "scripts": {
     "test": "karma start $KARMAFLAGS"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matrix-org/browser-encrypt-attachment.git"
+    "url": "git+https://github.com/matrix-org/matrix-encrypt-attachment.git"
   },
   "keywords": [
     "matrix"
   ],
-  "author": "",
+  "author": "matrix.org",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/matrix-org/browser-encrypt-attachment/issues"
+    "url": "https://github.com/matrix-org/matrix-encrypt-attachment/issues"
   },
-  "homepage": "https://github.com/matrix-org/browser-encrypt-attachment#readme",
+  "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
