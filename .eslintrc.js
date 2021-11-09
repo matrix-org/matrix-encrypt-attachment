@@ -3,7 +3,7 @@ module.exports = {
         'matrix-org',
     ],
     extends: [
-        'plugin:matrix-org/babel',
+        'plugin:matrix-org/typescript',
     ],
     env: {
         browser: true,
