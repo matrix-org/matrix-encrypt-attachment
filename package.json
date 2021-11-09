@@ -2,9 +2,10 @@
   "name": "matrix-encrypt-attachment",
   "version": "0.3.0",
   "description": "Lbrary for encrypting and decrypting file attachments in Matrix.",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "karma start $KARMAFLAGS"
+    "build": "babel -d lib --verbose --extensions \".js\" src",
+    "test": "yarn build && karma start $KARMAFLAGS"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,9 @@
   },
   "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
     "karma": "^6.3.8",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.2",
