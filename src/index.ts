@@ -1,3 +1,12 @@
+interface IAttachmentInfo {
+    key: any;
+    iv: string;
+    v?: string;
+    hashes: {
+        sha256: string;
+    };
+}
+
 /**
  * Encrypt an attachment.
  * @param {ArrayBuffer} plaintextBuffer The attachment data buffer.
@@ -5,7 +14,10 @@
  *      The object has a "data" key with an ArrayBuffer of encrypted data and an "info" key
  *      with an object containing the info needed to decrypt the data.
  */
-function encryptAttachment(plaintextBuffer) {
+async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
+    data: ArrayBuffer;
+    info: IAttachmentInfo;
+}> {
     let cryptoKey; // The AES key object.
     let exportedKey; // The AES key exported as JWK.
     let ciphertextBuffer; // ArrayBuffer of encrypted data.
@@ -59,7 +71,7 @@ function encryptAttachment(plaintextBuffer) {
  * @param {string} info.hashes.sha256 Base64 encoded SHA-256 hash of the ciphertext.
  * @return {Promise} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
  */
-function decryptAttachment(ciphertextBuffer, info) {
+async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IAttachmentInfo): Promise<ArrayBuffer> {
     if (info === undefined || info.key === undefined || info.iv === undefined
         || info.hashes === undefined || info.hashes.sha256 === undefined) {
         throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
@@ -98,7 +110,7 @@ function decryptAttachment(ciphertextBuffer, info) {
  * @param {Uint8Array} uint8Array The data to encode.
  * @return {string} The base64 without padding.
  */
-function encodeBase64(uint8Array) {
+function encodeBase64(uint8Array: Uint8Array): string {
     // Misinterpt the Uint8Array as Latin-1.
     // window.btoa expects a unicode string with codepoints in the range 0-255.
     const latin1String = String.fromCharCode.apply(null, uint8Array);
@@ -117,7 +129,7 @@ function encodeBase64(uint8Array) {
  * @param {string} base64 The unpadded base64 to decode.
  * @return {Uint8Array} The decoded data.
  */
-function decodeBase64(base64) {
+function decodeBase64(base64: string): Uint8Array {
     // Pad the base64 up to the next multiple of 4.
     const paddedBase64 = base64 + '==='.slice(0, (4 - base64.length % 4) % 4);
     // Decode the base64 as a misinterpreted Latin-1 string.

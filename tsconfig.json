@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
+    "module": "none",
     "moduleResolution": "node",
-    "allowJs": true,
-    "outDir": "lib"
+    "outDir": "lib",
+    "sourceMap": true,
+    "declaration": true
   },
   "include": [
-    "./src/**/*.js"
+    "./src/**/*.ts"
   ]
 }
