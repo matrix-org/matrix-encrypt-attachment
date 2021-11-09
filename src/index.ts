@@ -18,48 +18,35 @@ async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
     info: IAttachmentInfo;
 }> {
-    let cryptoKey; // The AES key object.
-    let exportedKey; // The AES key exported as JWK.
-    let ciphertextBuffer; // ArrayBuffer of encrypted data.
-    let sha256Buffer; // ArrayBuffer of digest.
     // Generate an IV where the first 8 bytes are random and the high 8 bytes
     // are zero. We set the counter low bits to 0 since it makes it unlikely
     // that the 64 bit counter will overflow.
     const ivArray = new Uint8Array(16); // Uint8Array of AES IV
     window.crypto.getRandomValues(ivArray.subarray(0, 8));
     // Load the encryption key.
-    return window.crypto.subtle.generateKey(
+    const cryptoKey = await window.crypto.subtle.generateKey(
         { 'name': 'AES-CTR', 'length': 256 }, true, ['encrypt', 'decrypt'],
-    ).then(function(generateKeyResult) {
-        cryptoKey = generateKeyResult;
-        // Export the Key as JWK.
-        return window.crypto.subtle.exportKey('jwk', cryptoKey);
-    }).then(function(exportKeyResult) {
-        exportedKey = exportKeyResult;
-        // Encrypt the input ArrayBuffer.
-        // Use half of the iv as the counter by setting the "length" to 64.
-        return window.crypto.subtle.encrypt(
-            { name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, plaintextBuffer,
-        );
-    }).then(function(encryptResult) {
-        ciphertextBuffer = encryptResult;
-        // SHA-256 the encrypted data.
-        return window.crypto.subtle.digest('SHA-256', ciphertextBuffer);
-    }).then(function(digestResult) {
-        sha256Buffer = digestResult;
-
-        return {
-            data: ciphertextBuffer,
-            info: {
-                v: 'v2',
-                key: exportedKey,
-                iv: encodeBase64(ivArray),
-                hashes: {
-                    sha256: encodeBase64(new Uint8Array(sha256Buffer)),
-                },
+    );
+    // Export the Key as JWK.
+    const exportedKey = await window.crypto.subtle.exportKey('jwk', cryptoKey);
+    // Encrypt the input ArrayBuffer.
+    // Use half of the iv as the counter by setting the "length" to 64.
+    const ciphertextBuffer = await window.crypto.subtle.encrypt(
+        { name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, plaintextBuffer,
+    );
+    // SHA-256 the encrypted data.
+    const sha256Buffer = await window.crypto.subtle.digest('SHA-256', ciphertextBuffer);
+    return {
+        data: ciphertextBuffer,
+        info: {
+            v: 'v2',
+            key: exportedKey,
+            iv: encodeBase64(ivArray),
+            hashes: {
+                sha256: encodeBase64(new Uint8Array(sha256Buffer)),
             },
-        };
-    });
+        },
+    };
 }
 
 /**
@@ -77,32 +64,27 @@ async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IAttachmen
         throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
     }
 
-    let cryptoKey; // The AES key object.
     const ivArray = decodeBase64(info.iv);
     const expectedSha256base64 = info.hashes.sha256;
     // Load the AES from the "key" key of the inf bao object.
-    return window.crypto.subtle.importKey(
+    const cryptoKey = await window.crypto.subtle.importKey(
         'jwk', info.key, { 'name': 'AES-CTR' }, false, ['encrypt', 'decrypt'],
-    ).then(function(importKeyResult) {
-        cryptoKey = importKeyResult;
-        // Check the sha256 hash
-        return window.crypto.subtle.digest('SHA-256', ciphertextBuffer);
-    }).then(function(digestResult) {
-        if (encodeBase64(new Uint8Array(digestResult)) != expectedSha256base64) {
-            throw new Error('Mismatched SHA-256 digest');
-        }
-        let counterLength;
-        if (info.v == 'v1' || info.v == 'v2') {
-            // Version 1 and 2 use a 64 bit counter.
-            counterLength = 64;
-        } else {
-            // Version 0 uses a 128 bit counter.
-            counterLength = 128;
-        }
-        return window.crypto.subtle.decrypt(
-            { name: 'AES-CTR', counter: ivArray, length: counterLength }, cryptoKey, ciphertextBuffer,
-        );
-    });
+    );
+    const digestResult = await window.crypto.subtle.digest('SHA-256', ciphertextBuffer);
+    if (encodeBase64(new Uint8Array(digestResult)) != expectedSha256base64) {
+        throw new Error('Mismatched SHA-256 digest');
+    }
+    let counterLength: number;
+    if (info.v == 'v1' || info.v == 'v2') {
+        // Version 1 and 2 use a 64 bit counter.
+        counterLength = 64;
+    } else {
+        // Version 0 uses a 128 bit counter.
+        counterLength = 128;
+    }
+    return window.crypto.subtle.decrypt(
+        { name: 'AES-CTR', counter: ivArray, length: counterLength }, cryptoKey, ciphertextBuffer,
+    );
 }
 
 /**
