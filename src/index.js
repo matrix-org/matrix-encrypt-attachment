@@ -1,7 +1,7 @@
 /**
  * Encrypt an attachment.
  * @param {ArrayBuffer} plaintextBuffer The attachment data buffer.
- * @return {Promise<ArrayBuffer>} A promise that resolves with an object when the attachment is encrypted.
+ * @return {Promise} A promise that resolves with an object when the attachment is encrypted.
  *      The object has a "data" key with an ArrayBuffer of encrypted data and an "info" key
  *      with an object containing the info needed to decrypt the data.
  */
@@ -57,7 +57,7 @@ function encryptAttachment(plaintextBuffer) {
  * @param {Object} info.key AES-CTR JWK key object.
  * @param {string} info.iv Base64 encoded 16 byte AES-CTR IV.
  * @param {string} info.hashes.sha256 Base64 encoded SHA-256 hash of the ciphertext.
- * @return {Promise<ArrayBuffer>} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
+ * @return {Promise} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
  */
 function decryptAttachment(ciphertextBuffer, info) {
     if (info === undefined || info.key === undefined || info.iv === undefined
