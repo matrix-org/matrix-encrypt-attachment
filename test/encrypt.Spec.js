@@ -1,8 +1,10 @@
-describe("EncryptAttachment", function() {
-    var testVectors = ["", "SGVsbG8sIFdvcmxk"];
+/* global assertEq */
+
+describe('EncryptAttachment', function() {
+    const testVectors = ['', 'SGVsbG8sIFdvcmxk'];
 
     testVectors.forEach(function(want) {
-        it("roundtrips " + JSON.stringify(want), function() {
+        it('roundtrips ' + JSON.stringify(want), function() {
             return encryptAttachment(decodeBase64(want)).then(function(encryptResult) {
                 return decryptAttachment(encryptResult.data, encryptResult.info);
             }).then(function(decryptResult) {
