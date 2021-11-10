@@ -3,9 +3,6 @@
         "mocha": true
     },
     "globals": {
-        "encryptAttachment": "readonly",
-        "decryptAttachment": "readonly",
-        "decodeBase64": "readonly",
-        "encodeBase64": "readonly"
+        "MatrixEncryptAttachment": "readonly"
     }
 }

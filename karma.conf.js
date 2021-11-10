@@ -13,7 +13,7 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'lib/index.js',
+            require('./package.json').browser,
             'test/**/*Spec.js',
         ],
 

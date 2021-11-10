@@ -26,7 +26,7 @@ describe('Base64', function() {
         const input = vector[0];
         const want = vector[1];
         it('encodes ' + JSON.stringify(input) + ' correctly', function() {
-            const got = encodeBase64(new Uint8Array(input));
+            const got = MatrixEncryptAttachment.encodeBase64(new Uint8Array(input));
             assertEq(got, want);
         });
     });
@@ -34,7 +34,7 @@ describe('Base64', function() {
         const input = vector[1];
         const want = vector[0];
         it('decodes ' + JSON.stringify(input) + ' correctly', function() {
-            const got = Array.prototype.slice.call(decodeBase64(input));
+            const got = Array.prototype.slice.call(MatrixEncryptAttachment.decodeBase64(input));
             assertEq(got, want);
         });
     });

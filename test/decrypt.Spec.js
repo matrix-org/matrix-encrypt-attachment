@@ -108,9 +108,11 @@ describe('DecryptAttachment', function() {
         const inputInfo = vector[1];
         const want = vector[2];
         it('decrypts ' + JSON.stringify([inputCiphertext, inputInfo]), function() {
-            return decryptAttachment(decodeBase64(inputCiphertext), inputInfo).then(function(got) {
-                assertEq(encodeBase64(new Uint8Array(got)), want);
-            });
+            return MatrixEncryptAttachment
+                .decryptAttachment(MatrixEncryptAttachment.decodeBase64(inputCiphertext), inputInfo)
+                .then(function(got) {
+                    assertEq(MatrixEncryptAttachment.encodeBase64(new Uint8Array(got)), want);
+                });
         });
     });
 });
