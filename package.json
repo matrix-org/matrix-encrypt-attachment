@@ -9,8 +9,9 @@
     "build": "yarn build:node && yarn build:browser",
     "build:node": "tsc",
     "build:browser": "browserify --standalone MatrixEncryptAttachment -d src/index.ts -p [ tsify -p ./tsconfig.json ] | exorcist lib/browser-encrypt-attachment.js.map > lib/browser-encrypt-attachment.js",
-    "test": "yarn lint && yarn build && yarn test:browser",
+    "test": "yarn lint && yarn build && yarn test:nodejs && yarn test:browser",
     "test:browser": "karma start $KARMAFLAGS",
+    "test:nodejs": "mocha --require ./test/nodeHelper.js",
     "lint": "yarn lint:style",
     "lint:style": "eslint src test"
   },
