@@ -1,4 +1,10 @@
-/* global assertEq */
+function assertEq(got, want) {
+    const gotJSON = JSON.stringify(got);
+    const wantJSON = JSON.stringify(want);
+    if (wantJSON != gotJSON) {
+        throw new Error('Want ' + wantJSON + ' got ' + gotJSON);
+    }
+}
 
 describe('EncryptAttachment', function() {
     const testVectors = ['', 'SGVsbG8sIFdvcmxk'];
