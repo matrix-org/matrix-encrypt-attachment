@@ -1,16 +1,69 @@
 import * as webcrypto from './webcrypto';
+import * as nodejs from './nodejs';
 
-export interface IAttachmentInfo {
-    key: any;
+const hasWebcrypto = !!(typeof window !== 'undefined' && window.crypto?.subtle);
+
+/**
+ * Represents an `EncryptedFile` as described by https://spec.matrix.org/v1.1/client-server-api/#extensions-to-mroommessage-msgtypes
+ */
+export interface IEncryptedFile {
+    /**
+     * A JSON Web Key object containing the key used.
+     */
+    key: JsonWebKey | IEncryptedFileJWK;
+
+    /**
+     * The 128-bit unique counter block used by AES-CTR, encoded as unpadded base64.
+     */
     iv: string;
-    v?: string;
+
+    /**
+     * Version of the encrypted attachments protocol.
+     * New encryptions will be created with v2.
+     * This library can decrypt v1 and v2. v0 (where `v` is `undefined`) is not supported by this library.
+     */
+    v: string;
+
+    /**
+     * A map from an algorithm name to a hash of the ciphertext, encoded as unpadded base64. Clients should support the SHA-256 hash, which uses the key sha256.
+     */
     hashes: {
         sha256: string;
     };
 }
 
 /**
- * Encrypt an attachment.
+ * Representation of `JWK` as described by https://spec.matrix.org/v1.1/client-server-api/#extensions-to-mroommessage-msgtypes
+ */
+export interface IEncryptedFileJWK extends JsonWebKey {
+    /**
+     * Key type. Must be `oct`.
+     */
+    kty: string;
+
+    /**
+     *  Key operations. Must at least contain `encrypt` and `decrypt`.
+     */
+    key_ops: string[];
+
+    /**
+     * Algorithm. Must be `A256CTR`.
+     */
+    alg: string;
+
+    /**
+     *  The key, encoded as urlsafe unpadded base64.
+     */
+    k: string;
+
+    /**
+     * Extractable. Must be `true`. This is a W3C extension.
+     */
+    ext: boolean;
+}
+
+/**
+ * Encrypt an attachment to latest protocol specification (currently v2).
  * @param {ArrayBuffer} plaintextBuffer The attachment data buffer.
  * @return {Promise} A promise that resolves with an object when the attachment is encrypted.
  *      The object has a "data" key with an ArrayBuffer of encrypted data and an "info" key
@@ -18,31 +71,31 @@ export interface IAttachmentInfo {
  */
 export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
-    info: IAttachmentInfo;
+    info: IEncryptedFile;
 }> {
-    return webcrypto.encryptAttachment(plaintextBuffer);
+    return hasWebcrypto ? webcrypto.encryptAttachment(plaintextBuffer)
+        : nodejs.encryptAttachment(Buffer.from(plaintextBuffer));
 }
 
 /**
- * Decrypt an attachment.
+ * Decrypt an attachment that has been encrypted with v1 or v2.
  * @param {ArrayBuffer} ciphertextBuffer The encrypted attachment data buffer.
- * @param {Object} info The information needed to decrypt the attachment.
- * @param {Object} info.key AES-CTR JWK key object.
- * @param {string} info.iv Base64 encoded 16 byte AES-CTR IV.
- * @param {string} info.hashes.sha256 Base64 encoded SHA-256 hash of the ciphertext.
- * @return {Promise} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
+ * @param {IEncryptedFile} info The information needed to decrypt the attachment.
+ * @return {Promise<ArrayBuffer>} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
  */
-export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IAttachmentInfo): Promise<ArrayBuffer> {
-    return webcrypto.decryptAttachment(ciphertextBuffer, info);
+export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
+    return hasWebcrypto ? webcrypto.decryptAttachment(ciphertextBuffer, info)
+        : nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info);
 }
 
 /**
- * Encode a typed array of uint8 as base64.
+ * Encode a typed array of uint8 as unpadded base64.
  * @param {Uint8Array} uint8Array The data to encode.
  * @return {string} The base64 without padding.
  */
 export function encodeBase64(uint8Array: Uint8Array): string {
-    return webcrypto.encodeBase64(uint8Array);
+    return hasWebcrypto ? webcrypto.encodeBase64(uint8Array)
+        : nodejs.encodeBase64(uint8Array);
 }
 
 /**
@@ -52,5 +105,6 @@ export function encodeBase64(uint8Array: Uint8Array): string {
  * @return {Uint8Array} The decoded data.
  */
 export function decodeBase64(base64: string): Uint8Array {
-    return webcrypto.decodeBase64(base64);
+    return hasWebcrypto ? webcrypto.decodeBase64(base64)
+        : nodejs.decodeBase64(base64);
 }

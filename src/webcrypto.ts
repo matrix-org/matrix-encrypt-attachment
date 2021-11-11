@@ -1,15 +1,8 @@
-import { IAttachmentInfo } from '.';
+import { IEncryptedFile } from '.';
 
-/**
- * Encrypt an attachment.
- * @param {ArrayBuffer} plaintextBuffer The attachment data buffer.
- * @return {Promise} A promise that resolves with an object when the attachment is encrypted.
- *      The object has a "data" key with an ArrayBuffer of encrypted data and an "info" key
- *      with an object containing the info needed to decrypt the data.
- */
 export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
-    info: IAttachmentInfo;
+    info: IEncryptedFile;
 }> {
     // Generate an IV where the first 8 bytes are random and the high 8 bytes
     // are zero. We set the counter low bits to 0 since it makes it unlikely
@@ -42,16 +35,8 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     };
 }
 
-/**
- * Decrypt an attachment.
- * @param {ArrayBuffer} ciphertextBuffer The encrypted attachment data buffer.
- * @param {Object} info The information needed to decrypt the attachment.
- * @param {Object} info.key AES-CTR JWK key object.
- * @param {string} info.iv Base64 encoded 16 byte AES-CTR IV.
- * @param {string} info.hashes.sha256 Base64 encoded SHA-256 hash of the ciphertext.
- * @return {Promise} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
- */
-export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IAttachmentInfo): Promise<ArrayBuffer> {
+// n.b. this is capable of decrypting v0 scheme too
+export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
     if (info === undefined || info.key === undefined || info.iv === undefined
         || info.hashes === undefined || info.hashes.sha256 === undefined) {
         throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
@@ -80,11 +65,6 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IAt
     );
 }
 
-/**
- * Encode a typed array of uint8 as base64.
- * @param {Uint8Array} uint8Array The data to encode.
- * @return {string} The base64 without padding.
- */
 export function encodeBase64(uint8Array: Uint8Array): string {
     // Misinterpt the Uint8Array as Latin-1.
     // window.btoa expects a unicode string with codepoints in the range 0-255.
@@ -98,12 +78,6 @@ export function encodeBase64(uint8Array: Uint8Array): string {
     return paddedBase64.slice(0, outputLength);
 }
 
-/**
- * Decode a base64 string to a typed array of uint8.
- * This will decode unpadded base64, but will also accept base64 with padding.
- * @param {string} base64 The unpadded base64 to decode.
- * @return {Uint8Array} The decoded data.
- */
 export function decodeBase64(base64: string): Uint8Array {
     // Pad the base64 up to the next multiple of 4.
     const paddedBase64 = base64 + '==='.slice(0, (4 - base64.length % 4) % 4);
