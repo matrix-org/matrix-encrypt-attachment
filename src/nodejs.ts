@@ -46,6 +46,7 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
     };
 }
 
+// this is based on https://github.com/matrix-org/matrix-content-scanner/blob/main/src/decrypt.js
 export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buffer {
     if (info === undefined || info.key === undefined || info.iv === undefined ||
         info.hashes === undefined || info.hashes.sha256 === undefined) {
@@ -73,16 +74,13 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
     const key = decodeBase64(info.key.k);
 
     // Calculate SHA 256 hash, encode as base64 without padding
-    const hash = crypto.createHash('sha256');
-    hash.update(dataBuffer);
-
-    const hashDigestBase64 = encodeBase64(hash.digest());
+    const hashDigestBase64 = encodeBase64(crypto.createHash('sha256').update(dataBuffer).digest());
 
     if (hashDigestBase64 !== expectedSha256base64) {
         throw new Error('Unexpected sha256 hash of encrypted data');
     }
 
-    const iv = Buffer.from(info.iv, 'base64');
+    const iv = decodeBase64(info.iv);
 
     const decipher = crypto.createDecipheriv(alg, key, iv);
 
