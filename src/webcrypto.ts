@@ -41,6 +41,10 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
         throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
     }
 
+    if (info.v && !info.v.match(/^v[1-2]$/)) {
+        throw new Error(`Unsupported protocol version: ${info.v}`);
+    }
+
     const ivArray = decodeBase64(info.iv);
     const expectedSha256base64 = info.hashes.sha256;
     // Load the AES from the "key" key of the inf bao object.

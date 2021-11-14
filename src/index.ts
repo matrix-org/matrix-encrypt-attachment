@@ -20,7 +20,7 @@ export interface IEncryptedFile {
     /**
      * Version of the encrypted attachments protocol. See README.md for supported protocol versions.
      */
-    v: string;
+    v?: string;
 
     /**
      * A map from an algorithm name to a hash of the ciphertext, encoded as unpadded base64. Clients should support the SHA-256 hash, which uses the key sha256.

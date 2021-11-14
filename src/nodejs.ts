@@ -53,6 +53,10 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
         throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
     }
 
+    if (info.v !== 'v2') {
+        throw new Error(`Unsupported protocol version: ${info.v ?? 'v0'}`);
+    }
+
     const expectedSha256base64 = info.hashes.sha256;
 
     // Convert from JWK to openssl algorithm
