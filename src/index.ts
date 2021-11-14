@@ -10,7 +10,7 @@ export interface IEncryptedFile {
     /**
      * A JSON Web Key object containing the key used.
      */
-    key: JsonWebKey | IEncryptedFileJWK;
+    key: IEncryptedFileJWK;
 
     /**
      * The 128-bit unique counter block used by AES-CTR, encoded as unpadded base64.
@@ -27,8 +27,8 @@ export interface IEncryptedFile {
     /**
      * A map from an algorithm name to a hash of the ciphertext, encoded as unpadded base64. Clients should support the SHA-256 hash, which uses the key sha256.
      */
-    hashes: {
-        sha256: string;
+    hashes?: {
+        sha256?: string;
     };
 }
 

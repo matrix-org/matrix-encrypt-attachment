@@ -1,4 +1,4 @@
-import { IEncryptedFile } from '.';
+import { IEncryptedFile, IEncryptedFileJWK } from '.';
 
 export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
@@ -26,7 +26,7 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
         data: ciphertextBuffer,
         info: {
             v: 'v2',
-            key: exportedKey,
+            key: exportedKey as IEncryptedFileJWK,
             iv: encodeBase64(ivArray),
             hashes: {
                 sha256: encodeBase64(new Uint8Array(sha256Buffer)),
