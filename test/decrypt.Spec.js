@@ -2,7 +2,7 @@ function assertEq(got, want) {
     const gotJSON = JSON.stringify(got);
     const wantJSON = JSON.stringify(want);
     if (wantJSON != gotJSON) {
-        throw new Error('Want ' + wantJSON + ' got ' + gotJSON);
+        throw new Error(`Want ${wantJSON} got ${gotJSON}`);
     }
 }
 
@@ -130,7 +130,7 @@ describe('DecryptAttachment', function() {
         const inputCiphertext = vector[0];
         const inputInfo = vector[1];
         const want = vector[2];
-        it('decrypts ' + JSON.stringify([inputCiphertext, inputInfo]), function() {
+        it(`decrypts ${JSON.stringify([inputCiphertext, inputInfo])}`, function() {
             return MatrixEncryptAttachment
                 .decryptAttachment(MatrixEncryptAttachment.decodeBase64(inputCiphertext), inputInfo)
                 .then(function(got) {

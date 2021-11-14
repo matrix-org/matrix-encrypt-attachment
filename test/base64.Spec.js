@@ -9,7 +9,7 @@ function assertEq(got, want) {
     const gotJSON = JSON.stringify(got);
     const wantJSON = JSON.stringify(want);
     if (wantJSON != gotJSON) {
-        throw new Error('Want ' + wantJSON + ' got ' + gotJSON);
+        throw new Error(`Want ${wantJSON} got ${gotJSON}`);
     }
 }
 
@@ -25,7 +25,7 @@ describe('Base64', function() {
     testVectors.forEach(function(vector) {
         const input = vector[0];
         const want = vector[1];
-        it('encodes ' + JSON.stringify(input) + ' correctly', function() {
+        it(`encodes ${JSON.stringify(input)} correctly`, function() {
             const got = MatrixEncryptAttachment.encodeBase64(new Uint8Array(input));
             assertEq(got, want);
         });
@@ -33,7 +33,7 @@ describe('Base64', function() {
     testVectors.forEach(function(vector) {
         const input = vector[1];
         const want = vector[0];
-        it('decodes ' + JSON.stringify(input) + ' correctly', function() {
+        it(`decodes ${JSON.stringify(input)} correctly`, function() {
             const got = Array.prototype.slice.call(MatrixEncryptAttachment.decodeBase64(input));
             assertEq(got, want);
         });
