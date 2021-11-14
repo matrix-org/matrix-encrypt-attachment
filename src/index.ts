@@ -18,9 +18,7 @@ export interface IEncryptedFile {
     iv: string;
 
     /**
-     * Version of the encrypted attachments protocol.
-     * New encryptions will be created with v2.
-     * This library can decrypt v1 and v2. v0 (where `v` is `undefined`) is not supported by this library.
+     * Version of the encrypted attachments protocol. See README.md for supported protocol versions.
      */
     v: string;
 

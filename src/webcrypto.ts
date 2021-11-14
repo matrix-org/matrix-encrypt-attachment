@@ -35,7 +35,6 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     };
 }
 
-// n.b. this is capable of decrypting v0 scheme too
 export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
     if (info === undefined || info.key === undefined || info.iv === undefined
         || info.hashes === undefined || info.hashes.sha256 === undefined) {
