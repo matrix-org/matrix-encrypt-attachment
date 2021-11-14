@@ -6,7 +6,7 @@ function assertEq(got, want) {
     }
 }
 
-const decryptTestVectors = [
+const v2TestVectors = [
     [
         '',
         {
@@ -27,7 +27,7 @@ const decryptTestVectors = [
         },
         '',
     ],
-    [ // v2
+    [
         '5xJZTt5cQicm+9f4',
         {
             'iv': '//////////8AAAAAAAAAAA',
@@ -47,7 +47,7 @@ const decryptTestVectors = [
         },
         'SGVsbG8sIFdvcmxk',
     ],
-    [ // protocol v2 with plain text YWxwaGF
+    [ // plain text YWxwaGF with protocol v2
         'zhtFStAeFx0s+9L/sSQO+WQMtldqYEHqTxMduJrCIpnkyer09kxJJuA4K+adQE4w+7jZe/vR9kIcqj9rOhDR8Q',
         {
             'iv': '//////////8AAAAAAAAAAA',
@@ -67,7 +67,10 @@ const decryptTestVectors = [
         },
         'YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ',
     ],
-    [ // protocol v1 with plain text YWxwaGF
+];
+
+const v1TestVectors = [
+    [ // plain text YWxwaGF with protocol v1
         'tJVNBVJ/vl36UQt4Y5e5m84bRUrQHhcdLPvS/7EkDvlkDLZXamBB6k8THbiawiKZ5Mnq9PZMSSbgOCvmnUBOMA',
         {
             'iv': '/////////////////////w',
@@ -87,7 +90,10 @@ const decryptTestVectors = [
         },
         'YWxwaGFudW1lcmljYWxseWFscGhhbnVtZXJpY2FsbHlhbHBoYW51bWVyaWNhbGx5YWxwaGFudW1lcmljYWxseQ',
     ],
-    [ // protocol v0 with plain text YWxwaGF
+];
+
+const v0TestVectors = [
+    [ // plain text YWxwaGF with protocol v0
         'tJVNBVJ/vl36UQt4Y5e5myqUL3M8OtjRVQljZ+LlwbJeucRIM7CeKDJGGOjlJ1bqpqUdl6zytXJ3dCyvnUi4eQ',
         {
             'iv': '/////////////////////w',
@@ -100,7 +106,6 @@ const decryptTestVectors = [
                 'k': '__________________________________________8',
                 'alg': 'A256CTR',
             },
-            'v': 'v1',
             'hashes': {
                 'sha256': '/K4w3G4zlLK312k66KxNPKDkWCn2QAH5aphAkuncTrQ',
             },
@@ -109,7 +114,18 @@ const decryptTestVectors = [
     ],
 ];
 
+const browserTestVectors = [
+    ...v2TestVectors,
+    ...v1TestVectors,
+    ...v0TestVectors,
+];
+
+const nodejsTestVectors = [
+    ...v2TestVectors,
+];
+
 describe('DecryptAttachment', function() {
+    const decryptTestVectors = typeof window === 'undefined' ? nodejsTestVectors : browserTestVectors;
     decryptTestVectors.forEach(function(vector) {
         const inputCiphertext = vector[0];
         const inputInfo = vector[1];
