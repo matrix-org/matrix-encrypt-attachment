@@ -19,7 +19,7 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
         kty: 'oct',
         key_ops: ['encrypt', 'decrypt'],
         alg: 'A256CTR',
-        k: encodeBase64(cryptoKey),
+        k: Buffer.from(cryptoKey).toString('base64url').replace(/=/g, ''), // URL safe base64 without padding
         ext: true,
     };
 
