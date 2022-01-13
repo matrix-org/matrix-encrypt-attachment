@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// For testing in NodeJS we load the CommonJS module into global namespace so that we reuse the existing tests
+// For testing in Node.js we load the CommonJS module into global namespace so that we reuse the existing tests
 
 /* eslint-disable */
 const path = require('path');

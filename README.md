@@ -2,7 +2,7 @@
 
 Encrypt and decrypt attachments in accordance with the [Matrix](https://matrix.org) [Client-Server API spec](https://spec.matrix.org/v1.1/client-server-api/#sending-encrypted-attachments).
 
-Supports browsers using [`WebCryptoAPI`](https://www.w3.org/TR/WebCryptoAPI/) and NodeJS via [`crypto`](https://nodejs.org/api/crypto.html).
+Supports browsers using [`WebCryptoAPI`](https://www.w3.org/TR/WebCryptoAPI/) and Node.js via [`crypto`](https://nodejs.org/api/crypto.html).
 
 ## Protocol versions
 
@@ -18,7 +18,7 @@ Previous versions of the protocol are not currently documented in the spec, and 
 
 The library will encrypt to the following protocol versions:
 
-| Protocol | Browser | NodeJS |
+| Protocol | Browser | Node.js |
 | --- | --- | --- |
 | Encrypt | v2 | v2 |
 
@@ -26,7 +26,7 @@ The library will encrypt to the following protocol versions:
 
 The library supports decryption of the following protocol versions:
 
-| Protocol | Browser | NodeJS |
+| Protocol | Browser | Node.js |
 | --- | --- | --- |
 | Decrypt v0 | ✅ | ❌ |
 | Decrypt v1 | ✅ | ❌ |
