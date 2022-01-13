@@ -37,6 +37,8 @@
   },
   "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
+    "@commitlint/cli": "^16.0.2",
+    "@commitlint/config-conventional": "^16.0.0",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "browserify": "^17.0.0",
@@ -44,6 +46,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-matrix-org": "github:matrix-org/eslint-plugin-matrix-org",
     "exorcist": "^2.0.0",
+    "husky": "^7.0.4",
     "karma": "^6.3.8",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.2",
