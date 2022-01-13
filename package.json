@@ -1,9 +1,17 @@
 {
   "name": "matrix-encrypt-attachment",
   "version": "0.3.0",
-  "description": "Lbrary for encrypting and decrypting file attachments in Matrix.",
+  "description": "JS/TS library for encrypting and decrypting file attachments in Matrix",
   "browser": "lib/browser-encrypt-attachment.js",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "README.md",
+    "CHANGELOG.md",
+    "package.json",
+    "yarn.lock",
+    "LICENSE"
+  ],
   "scripts": {
     "prepublishOnly": "yarn build",
     "build": "yarn build:node && yarn build:browser",
@@ -22,7 +30,7 @@
   "keywords": [
     "matrix"
   ],
-  "author": "matrix.org",
+  "author": "The Matrix.org Foundation C.I.C.",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/matrix-org/matrix-encrypt-attachment/issues"
