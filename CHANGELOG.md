@@ -1,3 +1,18 @@
+# 1.0.0 (2022-01-13)
+
+### BREAKING CHANGES
+
+* Published as `matrix-encrypt-attachment` instead of `browser-encrypt-attachment`
+
+### Features
+
+* support for Node.js >=12 as well as browsers
+* TypeScript typings are now provided
+
+# 0.x.x
+
+The following changes are archived from [`browser-encrypt-attachment`](https://www.npmjs.com/package/browser-encrypt-attachment):
+
 Changes in [0.3.0](https://github.com/matrix-org/browser-encrypt-attachment/releases/tag/v0.3.0) (2016-11-23)
 ===================================================================================================
 [Full Changelog](https://github.com/matrix-org/browser-encrypt-attachment/compare/v0.2.0...v0.3.0)
