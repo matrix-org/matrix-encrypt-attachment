@@ -35,7 +35,8 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
         kty: 'oct',
         key_ops: ['encrypt', 'decrypt'],
         alg: 'A256CTR',
-        k: Buffer.from(cryptoKey).toString('base64url').replace(/=/g, ''), // URL safe base64 without padding
+        // node 14+ supports base64url encoding directly, but node 12 doesn't so we implement the mapping ourselves
+        k: Buffer.from(cryptoKey).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''), // URL safe base64 without padding
         ext: true,
     };
 
