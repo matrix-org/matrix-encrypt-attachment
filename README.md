@@ -4,6 +4,8 @@ Encrypt and decrypt attachments in accordance with the [Matrix](https://matrix.o
 
 Supports browsers using [`WebCryptoAPI`](https://www.w3.org/TR/WebCryptoAPI/) and Node.js via [`crypto`](https://nodejs.org/api/crypto.html).
 
+This project builds on [`browser-encrypt-attachment`](https://github.com/matrix-org/browser-encrypt-attachment) to add support for non-browser environments.
+
 ## Protocol versions
 
 Previous versions of the protocol are not currently documented in the spec, and are described here for reference:
