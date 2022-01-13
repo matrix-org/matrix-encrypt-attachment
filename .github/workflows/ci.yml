@@ -18,6 +18,21 @@ jobs:
       - run: yarn install
       - run: yarn lint
 
+  # Browsers
+  # ================================================
+
+  build-and-test-browsers:
+    name: 'Build and Test Browsers'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test:browser
+
   # Node 16
   # ================================================
 
