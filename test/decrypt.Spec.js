@@ -146,7 +146,7 @@ describe('DecryptAttachment', function() {
         const inputCiphertext = vector[0];
         const inputInfo = vector[1];
         const want = vector[2];
-        it(`decrypts ${inputInfo.v ?? 'v0'} ${JSON.stringify([inputCiphertext, inputInfo])}`, function() {
+        it(`decrypts ${inputInfo.v || 'v0'} ${JSON.stringify([inputCiphertext, inputInfo])}`, function() {
             return MatrixEncryptAttachment
                 .decryptAttachment(MatrixEncryptAttachment.decodeBase64(inputCiphertext), inputInfo)
                 .then(function(got) {
