@@ -22,7 +22,7 @@ jobs:
   # ================================================
 
   build-and-test-16:
-    name: 'Build Node 16'
+    name: 'Build and Test Node 16'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
   # ================================================
 
   build-and-test-14:
-    name: 'Build Node 14'
+    name: 'Build and Test Node 14'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -52,7 +52,7 @@ jobs:
   # ================================================
 
   build-and-test-12:
-    name: 'Build Node 12'
+    name: 'Build and Test Node 12'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
