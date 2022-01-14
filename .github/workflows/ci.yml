@@ -41,20 +41,20 @@ jobs:
       - name: Switch to Node 16
         uses: actions/setup-node@v2
         with:
-          node-version-file: '16'
+          node-version: '16'
       - name: Test Node 16
         run: yarn test:nodejs
 
       - name: Switch to Node 14
         uses: actions/setup-node@v2
         with:
-          node-version-file: '14'
+          node-version: '14'
       - name: Test Node 14
         run: yarn test:nodejs
 
       - name: Switch to Node 12
         uses: actions/setup-node@v2
         with:
-          node-version-file: '12'
+          node-version: '12'
       - name: Test Node 12
         run: yarn test:nodejs
