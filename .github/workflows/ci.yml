@@ -1,48 +1,60 @@
 name: CI
+
 on:
   pull_request:
     branches: [main]
-jobs:
-  # Global
-  # ================================================
 
+jobs:
   lint:
     name: 'Lint'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
           node-version-file: '.nvmrc'
-      - run: yarn install
-      - run: yarn lint
+      - name: Install deps
+        run: yarn install
+      - name: Lint
+        run: yarn lint
 
-  # Browsers
-  # ================================================
-
-  build-and-test-browsers:
-    name: 'Build and Test Browsers'
+  build-and-test:
+    name: 'Build and Test'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
           node-version-file: '.nvmrc'
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test:browser
+      - name: Install deps
+        run: yarn install
+      - name: Build
+        run: yarn build
 
-  build-and-test-node:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [ '12', '14', '16' ]
-    name: Build and Test Node.js ${{ matrix.node }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Test browsers
+        run: yarn test:browser
+
+      - name: Switch to Node 16
+        uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test:nodejs
+          node-version-file: '16'
+      - name: Test Node 16
+        run: yarn test:nodejs
+
+      - name: Switch to Node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: '14'
+      - name: Test Node 14
+        run: yarn test:nodejs
+
+      - name: Switch to Node 12
+        uses: actions/setup-node@v2
+        with:
+          node-version-file: '12'
+      - name: Test Node 12
+        run: yarn test:nodejs
