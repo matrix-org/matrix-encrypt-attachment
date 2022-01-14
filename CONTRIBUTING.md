@@ -115,5 +115,5 @@ If you forgot to sign off your commits before making your pull request and are
 on Git 2.17+ you can mass signoff using rebase:
 
 ```
-git rebase --signoff origin/develop
+git rebase --signoff origin/main
 ```
