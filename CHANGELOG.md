@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/matrix-org/matrix-encrypt-attachment/compare/v1.0.0...v1.0.1) (2022-01-14)
+
+
+### Bug Fixes
+
+* enabled automatic semantic release from main branch ([6b7fde1](https://github.com/matrix-org/matrix-encrypt-attachment/commit/6b7fde1f8529b141882a395adacbffc1c4f02a93))
+
 # 1.0.0 (2022-01-13)
 
 ### BREAKING CHANGES
