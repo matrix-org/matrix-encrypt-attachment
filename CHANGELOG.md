@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/matrix-org/matrix-encrypt-attachment/compare/v1.0.1...v1.0.2) (2022-01-29)
+
+
+### Bug Fixes
+
+* specify correct Node.js compatibility (>=12) ([999f197](https://github.com/matrix-org/matrix-encrypt-attachment/commit/999f1972f9ba708a5d2fd6f516347860c2a90aef))
+
 ## [1.0.1](https://github.com/matrix-org/matrix-encrypt-attachment/compare/v1.0.0...v1.0.1) (2022-01-14)
 
 
