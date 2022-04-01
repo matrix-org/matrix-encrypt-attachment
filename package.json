@@ -1,6 +1,6 @@
 {
   "name": "matrix-encrypt-attachment",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "JS/TS library for encrypting and decrypting file attachments in Matrix",
   "browser": "lib/browser-encrypt-attachment.js",
   "main": "lib/index.js",
