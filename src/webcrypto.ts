@@ -110,3 +110,10 @@ export function decodeBase64(base64: string): Uint8Array {
     }
     return uint8Array;
 }
+
+export default {
+    encryptAttachment,
+    decryptAttachment,
+    encodeBase64,
+    decodeBase64,
+};
