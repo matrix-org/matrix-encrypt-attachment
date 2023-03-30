@@ -76,3 +76,4 @@ typings/
 .fusebox/
 
 lib
+.DS_Store
