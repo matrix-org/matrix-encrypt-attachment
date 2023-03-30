@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/matrix-org/matrix-encrypt-attachment/compare/v1.0.2...v1.0.3) (2022-04-01)
+
+
+### Bug Fixes
+
+* add explicit default export for browser build to aide backwards compatibility ([7280eae](https://github.com/matrix-org/matrix-encrypt-attachment/commit/7280eae9838c5757deaa08c2a534e7d966cae0e9))
+
 ## [1.0.2](https://github.com/matrix-org/matrix-encrypt-attachment/compare/v1.0.1...v1.0.2) (2022-01-29)
 
 
