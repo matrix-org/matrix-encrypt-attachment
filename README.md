@@ -33,3 +33,4 @@ The library supports decryption of the following protocol versions:
 | Decrypt v0 | ✅ | ❌ |
 | Decrypt v1 | ✅ | ❌ |
 | Decrypt v2 | ✅ | ✅ |
+

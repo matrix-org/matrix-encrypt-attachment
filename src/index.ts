@@ -92,6 +92,19 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
 }
 
 /**
+ * Encrypt an stream of data to latest protocol specification (currently v3).
+ * @param {ReadableStream} plaintextStream The readable stream of plaintext
+ * @param {WritableStream} ciphertextStream The writable stream of ciphertext
+ * @return {Promise} A promise that resolves with an object when the attachment is encrypted.
+ *      The object has an "info" key with an object containing the info needed to decrypt the data.
+ */
+export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream): Promise<{
+    info: IEncryptedFile;
+}> {
+    return webcrypto.encryptStreamedAttachment(plaintextStream, ciphertextStream);
+}
+
+/**
  * Decrypt an attachment that has been encrypted with v1 or v2.
  * @param {ArrayBuffer} ciphertextBuffer The encrypted attachment data buffer.
  * @param {IEncryptedFile} info The information needed to decrypt the attachment.
@@ -100,6 +113,16 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
 export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
     return hasWebcrypto ? webcrypto.decryptAttachment(ciphertextBuffer, info)
         : nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info);
+}
+
+/**
+ * Decrypt a stream of data to latest protocol specification (currently v3).
+ * @param {ReadableStream} ciphertextStream The readable stream of ciphertext
+ * @param {WritableStream} plaintextStream The writable stream of plaintext
+ * @return nothing
+ */
+export async function decryptStreamedAttachment(ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile) {
+    return webcrypto.decryptStreamedAttachment(ciphertextStream, plaintextStream, info);
 }
 
 /**

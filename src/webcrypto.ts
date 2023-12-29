@@ -84,6 +84,132 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
     );
 }
 
+export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream): Promise<{
+    info: IEncryptedFile;
+}> {
+    // generate a full 12-bytes of IV, as it shouldn't matter if AES-GCM overflows
+    // and more entropy is better.
+    const ivArray = new Uint8Array(12); // Uint8Array of AES IV
+    window.crypto.getRandomValues(ivArray.subarray(0, 12));
+    // Load the encryption key.
+    const cryptoKey = await window.crypto.subtle.generateKey(
+        { 'name': 'AES-GCM', 'length': 256 }, true, ['encrypt'],
+    );
+    // Export the Key as JWK.
+    const exportedKey = await window.crypto.subtle.exportKey('jwk', cryptoKey);
+
+    // encrypt chunks from the plaintextStream and emit them to the ciphertextStream
+    const reader = plaintextStream.getReader();
+    const writer = ciphertextStream.getWriter();
+
+    let blockId = 0;
+
+    // TODO: what's the right type for the `any` here?
+    const onRead = async ({done, value}: ReadableStreamDefaultReadResult<any>) => {
+        if (done) {
+            writer.close();
+            return;
+        }
+
+        const blockIdArray = new Uint32Array([blockId]);
+
+        const ciphertextBuffer = await window.crypto.subtle.encrypt(
+            { name: 'AES-GCM', iv: ivArray, length: 96, additionalData: blockIdArray }, cryptoKey, value,
+        );
+
+        console.log("done ", done, "value", value, "ciphertext", ciphertextBuffer);
+
+        writer.ready.then(() => {
+            // We write our custom headers to make the GCM block seekable, and to let partially decrypted content
+            // be visible to the recipient while benefiting from the GCM authentication tags.
+            writer.write(new Uint32Array([0xFFFFFFFF])); // registration marker
+            writer.write(blockIdArray);
+            writer.write(new Uint32Array([value.length]));
+            writer.write(ciphertextBuffer);
+            writer.write(new Uint32Array([0x00000000])); // TODO: should be a CRC
+        });
+
+        blockId++;
+
+        // bump the IV MSB top 32 bits for every new block to prevent IV reuse
+        Uint32Array.from(ivArray)[0]++;
+
+        // Read some more, and call this function again
+        return reader.read().then(onRead);
+    };
+
+    reader.read().then(onRead);
+
+    return {
+        info: {
+            v: 'v3',
+            key: exportedKey as IEncryptedFileJWK,
+            iv: encodeBase64(ivArray),
+            hashes: {
+                // no hashes need for AES-GCM
+            },
+        },
+    };
+}
+
+export async function decryptStreamedAttachment(ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile) {
+    if (info === undefined || info.key === undefined || info.iv === undefined) {
+        throw new Error('Invalid info. Missing info.key or info.iv');
+    }
+
+    if (info.v && !info.v.match(/^v3$/)) {
+        throw new Error(`Unsupported protocol version: ${info.v}`);
+    }
+
+    const ivArray = decodeBase64(info.iv);
+
+    // Load the AES from the "key" key of the inf bao object.
+    const cryptoKey = await window.crypto.subtle.importKey(
+        'jwk', info.key, { 'name': 'AES-GCM' }, false, ['decrypt'],
+    );
+
+    // decrypt chunks from the cipherStream and emit them to the Stream
+    const reader = ciphertextStream.getReader();
+    const writer = plaintextStream.getWriter();
+
+    let blockId = 0;
+
+    const onRead = ({ done, chunk }) => {
+        if (done) {
+            writer.close();
+            return;
+        }
+        // TODO: merge reads chunks together if needed
+
+        const header = new Uint32Array(chunk, 0, 12);
+        if (header[0] != 0xFFFFFFFF) {
+            // XXX: TODO: hunt for the registration code
+            throw new Error("Chunk doesn't begin with a registration code");
+        }
+        // XXX: check the CRC
+        const blockId = header[1];
+        const blockLength = header[2];
+
+        const iv = new Uint32Array( ivArray.buffer );
+        iv[0] = iv[0] + blockId;
+        const counter = new Uint8Array( iv );
+
+        const plaintextBuffer = window.crypto.subtle.decrypt(
+            { name: 'AES-GCM', counter, length: 96, additionalData: new Uint32Array([blockId]) },
+            cryptoKey, new Uint8Array(chunk, 12, blockLength - 12),
+        );
+
+        writer.ready.then(() => writer.write(plaintextBuffer));
+
+        // Read some more, and call this function again
+        return reader.read().then(onRead);
+    };
+
+    reader.read().then(onRead);
+
+    return plaintextStream;
+}
+
 export function encodeBase64(uint8Array: Uint8Array): string {
     // Misinterpt the Uint8Array as Latin-1.
     // window.btoa expects a unicode string with codepoints in the range 0-255.
@@ -114,6 +240,8 @@ export function decodeBase64(base64: string): Uint8Array {
 export default {
     encryptAttachment,
     decryptAttachment,
+    encryptStreamedAttachment,
+    decryptStreamedAttachment,
     encodeBase64,
     decodeBase64,
 };
