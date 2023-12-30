@@ -86,7 +86,8 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
 
 // XXX: is this the right idiom for the Streams API? It matches the existing encrypt/decryptAttachment() signatures,
 // Alternatively it could return a TransformStream object, rather than clocking itself.
-export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream): Promise<IEncryptedFile> {
+export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream):
+    Promise<IEncryptedFile> {
     // generate a full 12-bytes of IV, as it shouldn't matter if AES-GCM overflows
     // and more entropy is better.
     const iv = new Uint8Array(12); // Uint8Array of AES IV
@@ -106,7 +107,7 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
     let blockId = 0;
     let started = false;
 
-    const onRead = async ({done, value}) => {
+    const onRead = async ({ done, value }) => {
         if (done) {
             writer.close();
             return;
@@ -119,10 +120,9 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
             ciphertextBuffer = await window.crypto.subtle.encrypt(
                 { name: 'AES-GCM', iv, length: 96, additionalData: blockIdArray }, cryptoKey, value,
             );
-        }
-        catch (e) {
-            console.error("failed to encrypt", e);
-            throw(e);
+        } catch (e) {
+            console.error('failed to encrypt', e);
+            throw (e);
         }
 
         writer.ready.then(() => {
@@ -162,7 +162,9 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
     };
 }
 
-export async function decryptStreamedAttachment(ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile) {
+export async function decryptStreamedAttachment(
+    ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile,
+) {
     if (info === undefined || info.key === undefined || info.iv === undefined) {
         throw new Error('Invalid info. Missing info.key or info.iv');
     }
@@ -179,8 +181,6 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
     // decrypt chunks from the cipherStream and emit them to the Stream
     const reader = ciphertextStream.getReader();
     const writer = plaintextStream.getWriter();
-
-    let blockId = 0;
 
     const bufferLen = (32768 + 16 + 16) * 2;
     let buffer = new Uint8Array(bufferLen);
@@ -202,10 +202,9 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
             const magicLen = 4;
             if (bufferOffset > magicLen) {
                 if (buffer[0] != 77 || buffer[1] != 88 || buffer[2] != 67 || buffer[3] != 0x03) {
-                    throw new Error("Can't decrypt stream: invalid magic number");
+                    throw new Error('Can\'t decrypt stream: invalid magic number');
                 }
-            }
-            else {
+            } else {
                 started = true;
                 // rewind away the magic number
                 const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
@@ -221,16 +220,16 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
             const header = new Uint32Array(buffer.buffer, 0, 12);
             if (header[0] != 0xFFFFFFFF) {
                 // TODO: handle random access and hunt for the registration code if it's not at the beginning
-                console.log("Chunk doesn't begin with a registration code", header, header[0]);
-                throw new Error("Chunk doesn't begin with a registration code");
+                console.log('Chunk doesn\'t begin with a registration code', header, header[0]);
+                throw new Error('Chunk doesn\'t begin with a registration code');
             }
             const blockId = header[1];
             const blockLength = header[2];
-            const crc = header[3];
+            // const crc = header[3];
             if (bufferOffset >= headerLen + blockLength) {
                 // we can decrypt!
-
                 // TODO: check the CRC
+
                 const iv = new Uint32Array(decodeBase64(info.iv).buffer);
                 iv[0] += blockId;
 
@@ -242,10 +241,9 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
                         { name: 'AES-GCM', iv, length: 96, additionalData: blockIdArray },
                         cryptoKey, buffer.slice(headerLen, headerLen + blockLength),
                     );
-                }
-                catch (e) {
-                    console.error("failed to decrypt (probably invalid IV or corrupt stream)", e);
-                    throw(e);
+                } catch (e) {
+                    console.error('failed to decrypt (probably invalid IV or corrupt stream)', e);
+                    throw (e);
                 }
 
                 writer.ready.then(() => writer.write(plaintextBuffer));

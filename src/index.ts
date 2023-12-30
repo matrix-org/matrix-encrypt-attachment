@@ -98,7 +98,8 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
  * @return {Promise} A promise that resolves with an object when the attachment is encrypted.
  *      The object has an "info" key with an object containing the info needed to decrypt the data.
  */
-export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream): Promise<IEncryptedFile> {
+export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream):
+    Promise<IEncryptedFile> {
     return webcrypto.encryptStreamedAttachment(plaintextStream, ciphertextStream);
 }
 
@@ -119,7 +120,9 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
  * @param {WritableStream} plaintextStream The writable stream of plaintext
  * @return nothing
  */
-export async function decryptStreamedAttachment(ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile) {
+export async function decryptStreamedAttachment(
+    ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile,
+) {
     return webcrypto.decryptStreamedAttachment(ciphertextStream, plaintextStream, info);
 }
 
