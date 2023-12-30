@@ -105,7 +105,6 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
 
     let blockId = 0;
 
-    // TODO: what's the right type for the `any` here?
     const onRead = async ({done, value}) => {
         if (done) {
             writer.close();
@@ -125,8 +124,6 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
             throw(e);
         }
 
-        console.log("encryptStreamedAttachment: encrypted ", { done, value, ciphertextBuffer, blockIdArray, iv0 : iv[0] });
-
         writer.ready.then(() => {
             // We write our custom headers to make the GCM block seekable, and to let partially decrypted content
             // be visible to the recipient while benefiting from the GCM authentication tags.
@@ -134,14 +131,14 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
             writer.write(new Uint8Array(blockIdArray.buffer));
             writer.write(new Uint8Array(new Uint32Array([ciphertextBuffer.byteLength]).buffer));
             writer.write(new Uint8Array(ciphertextBuffer));
-            writer.write(new Uint8Array([0x00, 0x00, 0x00, 0x00])); // TODO: should be a CRC
+            // TODO: calculate a CRC
+            writer.write(new Uint8Array([0x00, 0x00, 0x00, 0x00]));
         });
 
         blockId++;
 
         // bump the IV MSB top 32 bits for every new block to prevent IV reuse
         new Uint32Array(iv.buffer)[0]++;
-        console.log("encryptStreamedAttachment: incremented iv to ", iv);
 
         // Read some more, and call this function again
         return reader.read().then(onRead);
@@ -187,8 +184,6 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
 
         const iv = new Uint32Array(decodeBase64(info.iv).buffer);
 
-        console.log("decryptStreamedAttachment: onRead() done ", done, "value", value);
-
         if (done) {
             writer.close();
             return;
@@ -197,14 +192,12 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
         buffer.set(value, bufferOffset);
         bufferOffset += value.length;
 
-        console.log("decryptStreamedAttachment: bufferOffset after read", bufferOffset);
-
         const headerLen = 12;
         const crcLen = 4;
         if (bufferOffset > headerLen) {
             const header = new Uint32Array(buffer.buffer, 0, 12);
             if (header[0] != 0xFFFFFFFF) {
-                // TODO: hunt for the registration code
+                // TODO: hunt for the registration code if it's not at the beginning
                 console.log("Chunk doesn't begin with a registration code", header, header[0]);
                 throw new Error("Chunk doesn't begin with a registration code");
             }
@@ -212,13 +205,9 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
             const blockLength = header[2];
             if (bufferOffset >= headerLen + blockLength + crcLen) {
                 // we can decrypt!
+
                 // TODO: check the CRC
-
                 iv[0] += blockId;
-
-                console.log("decryptStreamedAttachment: attempting decrypt",
-                    { buffer, iv0: new Uint8Array(iv.buffer)[0], blockId, bufferOffset, headerLen, blockLength, crcLen }
-                );
 
                 const blockIdArray = new Uint32Array([blockId]);
 
@@ -230,11 +219,9 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
                     );
                 }
                 catch (e) {
-                    console.error("failed to decrypt", e);
+                    console.error("failed to decrypt (probably invalid IV or corrupt stream)", e);
                     throw(e);
                 }
-
-                console.log("decryptStreamedAttachment: plaintext", plaintextBuffer);
 
                 writer.ready.then(() => writer.write(plaintextBuffer));
 
