@@ -92,7 +92,7 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
 }
 
 /**
- * Encrypt an stream of data to latest protocol specification (currently v3).
+ * Encrypt an stream of arraybuffers for MSC4016 (aka v3)
  * @param {ReadableStream} plaintextStream The readable stream of plaintext
  * @param {WritableStream} ciphertextStream The writable stream of ciphertext
  * @return {Promise} A promise that resolves with an object when the attachment is encrypted.
@@ -114,7 +114,7 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
 }
 
 /**
- * Decrypt a stream of data to latest protocol specification (currently v3).
+ * Decrypt a stream of arraybuffers for MSC4016 (aka v3)
  * @param {ReadableStream} ciphertextStream The readable stream of ciphertext
  * @param {WritableStream} plaintextStream The writable stream of plaintext
  * @return nothing

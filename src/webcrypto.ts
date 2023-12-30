@@ -104,6 +104,7 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
     const writer = ciphertextStream.getWriter();
 
     let blockId = 0;
+    let started = false;
 
     const onRead = async ({done, value}) => {
         if (done) {
@@ -125,6 +126,11 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
         }
 
         writer.ready.then(() => {
+            if (!started) {
+                writer.write(new Uint8Array([77, 88, 67, 0x03])); // magic number
+                started = true;
+            }
+
             // We write our custom headers to make the GCM block seekable, and to let partially decrypted content
             // be visible to the recipient while benefiting from the GCM authentication tags.
             writer.write(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])); // registration marker
@@ -180,10 +186,9 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
     let buffer = new Uint8Array(bufferLen);
     let bufferOffset = 0;
 
+    let started = false;
+
     const onRead = async ({ done, value }) => {
-
-        const iv = new Uint32Array(decodeBase64(info.iv).buffer);
-
         if (done) {
             writer.close();
             return;
@@ -192,12 +197,31 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
         buffer.set(value, bufferOffset);
         bufferOffset += value.length;
 
+        // handle magic number. TODO: handle random access.
+        if (!started) {
+            const magicLen = 4;
+            if (bufferOffset > magicLen) {
+                if (buffer[0] != 77 || buffer[1] != 88 || buffer[2] != 67 || buffer[3] != 0x03) {
+                    throw new Error("Can't decrypt stream: invalid magic number");
+                }
+            }
+            else {
+                started = true;
+                // rewind away the magic number
+                const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
+                newBuffer.set(buffer.slice(magicLen));
+                buffer = newBuffer;
+                bufferOffset = 0;
+            }
+        }
+
+        // handle blocks
         const headerLen = 12;
         const crcLen = 4;
         if (bufferOffset > headerLen) {
             const header = new Uint32Array(buffer.buffer, 0, 12);
             if (header[0] != 0xFFFFFFFF) {
-                // TODO: hunt for the registration code if it's not at the beginning
+                // TODO: handle random access and hunt for the registration code if it's not at the beginning
                 console.log("Chunk doesn't begin with a registration code", header, header[0]);
                 throw new Error("Chunk doesn't begin with a registration code");
             }
@@ -207,6 +231,7 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
                 // we can decrypt!
 
                 // TODO: check the CRC
+                const iv = new Uint32Array(decodeBase64(info.iv).buffer);
                 iv[0] += blockId;
 
                 const blockIdArray = new Uint32Array([blockId]);
