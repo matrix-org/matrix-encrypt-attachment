@@ -136,9 +136,9 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
             writer.write(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])); // registration marker
             writer.write(new Uint8Array(blockIdArray.buffer));
             writer.write(new Uint8Array(new Uint32Array([ciphertextBuffer.byteLength]).buffer));
-            writer.write(new Uint8Array(ciphertextBuffer));
             // TODO: calculate a CRC
             writer.write(new Uint8Array([0x00, 0x00, 0x00, 0x00]));
+            writer.write(new Uint8Array(ciphertextBuffer));
         });
 
         blockId++;
@@ -153,7 +153,7 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
     reader.read().then(onRead);
 
     return {
-        v: 'v3',
+        v: 'org.matrix.msc4016.v3',
         key: exportedKey as IEncryptedFileJWK,
         iv: ivString,
         hashes: {
@@ -167,7 +167,7 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
         throw new Error('Invalid info. Missing info.key or info.iv');
     }
 
-    if (info.v && !info.v.match(/^v3$/)) {
+    if (info.v && info.v != 'org.matrix.msc4016.v3') {
         throw new Error(`Unsupported protocol version: ${info.v}`);
     }
 
@@ -216,8 +216,7 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
         }
 
         // handle blocks
-        const headerLen = 12;
-        const crcLen = 4;
+        const headerLen = 16;
         if (bufferOffset > headerLen) {
             const header = new Uint32Array(buffer.buffer, 0, 12);
             if (header[0] != 0xFFFFFFFF) {
@@ -227,7 +226,8 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
             }
             const blockId = header[1];
             const blockLength = header[2];
-            if (bufferOffset >= headerLen + blockLength + crcLen) {
+            const crc = header[3];
+            if (bufferOffset >= headerLen + blockLength) {
                 // we can decrypt!
 
                 // TODO: check the CRC
@@ -252,7 +252,7 @@ export async function decryptStreamedAttachment(ciphertextStream: ReadableStream
 
                 // wind back the buffer, if any
                 const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
-                newBuffer.set(buffer.slice(headerLen + blockLength + crcLen));
+                newBuffer.set(buffer.slice(headerLen + blockLength));
                 buffer = newBuffer;
                 bufferOffset = 0;
             }
