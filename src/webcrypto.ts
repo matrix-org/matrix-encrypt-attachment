@@ -112,7 +112,8 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
 
     const onRead = async ({ done, value }) => {
         if (done) {
-            writer.close();
+            await writer.ready;
+            await writer.close();
             return;
         }
 
@@ -194,7 +195,8 @@ export async function decryptStreamedAttachment(
 
     const onRead = async ({ done, value }) => {
         if (done) {
-            writer.close();
+            await writer.ready;
+            await writer.close();
             return;
         }
 
