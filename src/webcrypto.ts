@@ -213,13 +213,14 @@ export async function decryptStreamedAttachment(
                 if (buffer[0] != 77 || buffer[1] != 88 || buffer[2] != 67 || buffer[3] != 0x03) {
                     throw new Error('Can\'t decrypt stream: invalid magic number');
                 }
-            } else {
-                started = true;
-                // rewind away the magic number
-                const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
-                newBuffer.set(buffer.slice(magicLen));
-                buffer = newBuffer;
-                bufferOffset = 0;
+                else {
+                    started = true;
+                    // rewind away the magic number
+                    const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
+                    newBuffer.set(buffer.slice(magicLen));
+                    buffer = newBuffer;
+                    bufferOffset -= magicLen;
+                }
             }
         }
 
@@ -228,7 +229,7 @@ export async function decryptStreamedAttachment(
 
         // handle blocks
         const headerLen = 16;
-        if (bufferOffset > headerLen) {
+        while (bufferOffset > headerLen) {
             const header = new Uint32Array(buffer.buffer, 0, 12);
             if (header[0] != 0xFFFFFFFF) {
                 // TODO: handle random access and hunt for the registration code if it's not at the beginning
@@ -265,7 +266,7 @@ export async function decryptStreamedAttachment(
                 const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
                 newBuffer.set(buffer.slice(headerLen + blockLength));
                 buffer = newBuffer;
-                bufferOffset = 0;
+                bufferOffset -= (headerLen + blockLength);
             }
         }
 
