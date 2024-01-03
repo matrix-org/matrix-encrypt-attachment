@@ -142,14 +142,16 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
                 started = true;
             }
 
+            const outBuffer = new Uint8Array(16 + ciphertextBuffer.byteLength);
             // We write our custom headers to make the GCM block seekable, and to let partially decrypted content
             // be visible to the recipient while benefiting from the GCM authentication tags.
-            writer.write(new Uint8Array([0xFF, 0xFF, 0xFF, 0xFF])); // registration marker
-            writer.write(new Uint8Array(blockIdArray.buffer));
-            writer.write(new Uint8Array(new Uint32Array([ciphertextBuffer.byteLength]).buffer));
+            outBuffer.set([0xFF, 0xFF, 0xFF, 0xFF], 0); // registration marker
+            outBuffer.set(new Uint8Array(blockIdArray.buffer), 4);
+            outBuffer.set(new Uint8Array(new Uint32Array([ciphertextBuffer.byteLength]).buffer), 8);
             // TODO: calculate a CRC
-            writer.write(new Uint8Array([0x00, 0x00, 0x00, 0x00]));
-            writer.write(new Uint8Array(ciphertextBuffer));
+            outBuffer.set([0x00, 0x00, 0x00, 0x00], 12);
+            outBuffer.set(new Uint8Array(ciphertextBuffer), 16);
+            writer.write(outBuffer);
         });
 
         blockId++;
