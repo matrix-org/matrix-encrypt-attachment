@@ -86,6 +86,9 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
 
 // XXX: is this the right idiom for the Streams API? It matches the existing encrypt/decryptAttachment() signatures,
 // Alternatively it could return a TransformStream object, rather than clocking itself.
+
+// XXX: also, i think i have readable & writable the wrong way round here: the upstream should be writing to the
+// writable plaintext, and the downstream should be reading from the readable ciphertext...
 export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream):
     Promise<IEncryptedFile> {
     // generate a full 12-bytes of IV, as it shouldn't matter if AES-GCM overflows
