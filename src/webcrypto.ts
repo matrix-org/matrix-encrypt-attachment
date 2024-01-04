@@ -214,8 +214,7 @@ export async function decryptStreamedAttachment(
             if (bufferOffset > magicLen) {
                 if (buffer[0] != 77 || buffer[1] != 88 || buffer[2] != 67 || buffer[3] != 0x03) {
                     throw new Error('Can\'t decrypt stream: invalid magic number');
-                }
-                else {
+                } else {
                     started = true;
                     // rewind away the magic number
                     const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
@@ -270,8 +269,7 @@ export async function decryptStreamedAttachment(
                 newBuffer.set(buffer.slice(headerLen + blockLength));
                 buffer = newBuffer;
                 bufferOffset -= (headerLen + blockLength);
-            }
-            else {
+            } else {
                 break;
             }
         }
