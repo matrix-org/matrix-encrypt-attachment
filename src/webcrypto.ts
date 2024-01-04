@@ -124,12 +124,12 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
 
         // concatenate the IV with the block sequence number so it gets hashed down to a 96-bit value within GCM
         // to mitigate IV reuse
-        iv.set(blockIdArray, 0);
+        iv.set(new Uint8Array(blockIdArray.buffer), 0);
 
         let ciphertextBuffer;
         try {
             ciphertextBuffer = await window.crypto.subtle.encrypt(
-                { name: 'AES-GCM', iv, length: 128, additionalData: blockIdArray }, cryptoKey, value,
+                { name: 'AES-GCM', iv, length: 128, additionalData: blockIdArray.buffer }, cryptoKey, value,
             );
         } catch (e) {
             console.error('failed to encrypt', e);
@@ -245,16 +245,17 @@ export async function decryptStreamedAttachment(
                 // we can decrypt!
                 // TODO: check the CRC
 
+                // TODO: terminate stream if blockId wraps all the way around (to prevent IV reuse)
                 const blockIdArray = new Uint32Array([blockId]);
 
                 // concatenate the IV with the block sequence number so it gets hashed down to a 96-bit value within GCM
                 // to mitigate IV reuse
-                iv.set(blockIdArray, 0);
+                iv.set(new Uint8Array(blockIdArray.buffer), 0);
 
                 let plaintextBuffer;
                 try {
                     plaintextBuffer = await window.crypto.subtle.decrypt(
-                        { name: 'AES-GCM', iv, length: 128, additionalData: blockIdArray },
+                        { name: 'AES-GCM', iv, length: 128, additionalData: blockIdArray.buffer },
                         cryptoKey, buffer.slice(headerLen, headerLen + blockLength),
                     );
                 } catch (e) {
