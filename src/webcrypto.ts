@@ -192,7 +192,7 @@ export async function decryptStreamedAttachment(
     const reader = ciphertextStream.getReader();
     const writer = plaintextStream.getWriter();
 
-    const bufferLen = (65536 + 16 + 16) * 2;
+    const bufferLen = 65536; // a good enough first guess
     let buffer = new Uint8Array(bufferLen);
     let bufferOffset = 0;
 
@@ -203,6 +203,13 @@ export async function decryptStreamedAttachment(
             await writer.ready;
             await writer.close();
             return;
+        }
+
+        // increase the buffer size if needed
+        if (bufferOffset + value.length > buffer.length) {
+            const newBuffer = new Uint8Array(buffer.length + value.length);
+            newBuffer.set(buffer);
+            buffer = newBuffer;
         }
 
         buffer.set(value, bufferOffset);
@@ -217,7 +224,7 @@ export async function decryptStreamedAttachment(
                 } else {
                     started = true;
                     // rewind away the magic number
-                    const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
+                    const newBuffer = new Uint8Array(buffer.length);
                     newBuffer.set(buffer.slice(magicLen));
                     buffer = newBuffer;
                     bufferOffset -= magicLen;
@@ -265,7 +272,7 @@ export async function decryptStreamedAttachment(
                 writer.ready.then(() => writer.write(plaintextBuffer));
 
                 // wind back the buffer, if any
-                const newBuffer = new Uint8Array(new ArrayBuffer(bufferLen));
+                const newBuffer = new Uint8Array(buffer.length);
                 newBuffer.set(buffer.slice(headerLen + blockLength));
                 buffer = newBuffer;
                 bufferOffset -= (headerLen + blockLength);
