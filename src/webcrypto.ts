@@ -192,7 +192,7 @@ export async function decryptStreamedAttachment(
     const reader = ciphertextStream.getReader();
     const writer = plaintextStream.getWriter();
 
-    const bufferLen = (32768 + 16 + 16) * 2;
+    const bufferLen = (65536 + 16 + 16) * 2;
     let buffer = new Uint8Array(bufferLen);
     let bufferOffset = 0;
 
@@ -270,6 +270,9 @@ export async function decryptStreamedAttachment(
                 newBuffer.set(buffer.slice(headerLen + blockLength));
                 buffer = newBuffer;
                 bufferOffset -= (headerLen + blockLength);
+            }
+            else {
+                break;
             }
         }
 
