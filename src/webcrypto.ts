@@ -84,7 +84,7 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
     );
 }
 
-// XXX: While this matches the signature of encryptAttachment(), it's not idiomatic at all for the Streams API.
+// FIXME: While this matches the signature of encryptAttachment(), it's not idiomatic at all for the Streams API.
 // Currently we hand a source (readable) and a sink (writable) to the method, and it connects the two together:
 //
 // const response = await fetch();
@@ -195,10 +195,10 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
     };
 }
 
-// See above for why this API shape is not idiomatic for the Streams API.  Rather than the method connecting a source
-// (readable) to a sink (writable), we should return a TransformStream which provides a writable which it turns into a
-// readable.  In other words, the API should expose its own source & sink, rather than trying to connect existing source
-// and sinks together.
+// FIXME: See above for why this API shape is not idiomatic for the Streams API.  Rather than the method connecting a
+// source(readable) to a sink (writable), we should return a TransformStream which provides a writable which it turns
+// into a readable.  In other words, the API should expose its own source & sink, rather than trying to connect
+// existing source and sinks together.
 //
 // const decryptTransform = new DecryptTransform(info);
 // const writable = fs.createWriteStream();
