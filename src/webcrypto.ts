@@ -84,11 +84,34 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
     );
 }
 
-// XXX: is this the right idiom for the Streams API? It matches the existing encrypt/decryptAttachment() signatures,
-// Alternatively it could return a TransformStream object, rather than clocking itself.
+// XXX: While this matches the signature of encryptAttachment(), it's not idiomatic at all for the Streams API.
+// Currently we hand a source (readable) and a sink (writable) to the method, and it connects the two together:
+//
+// const response = await fetch();
+// const readable = response.body;
+// const writable = fs.createWriteStream();
+// const info = await encryptStreamedAttachment(readable, writable);
+//
+// This gets ugly if you need to pass the output of the encryption into a readable though, as you have to convert the
+// writable to a readable via an identity TransformStream, which is an icky hack.
+//
+// Instead, the Streams API assumes that you connect "from left to right", and that you take a readable source
+// (e.g. fetch body) and pipe it into the writable sink of the next node (i.e. the input of the encrypter), which in
+// turn makes the encrypted result available as a readable, which can be piped onwards.  In other words, the input
+// of the transformer should be a writable, and the output should be a readable - not vice versa:
+//
+// Readables are sources, Writables are sinks, Transforms turn writables into readables.
+// Readables can be piped into writables via readable.pipeTo()
+// Readables can be piped through transforms (to be in turn readable) via readable.pipeThrough().
+//
+// Therefore, instead this should probably be something like:
+//
+// const encryptTransform = new EncryptTransform();
+// const info = encryptTransform.info;
+// const writable = fs.createWriteStream();
+// const response = await fetch();
+// response.body.pipeThrough(encryptTransform).pipeTo(writable);
 
-// XXX: also, i think i have readable & writable the wrong way round here: the upstream should be writing to the
-// writable plaintext, and the downstream should be reading from the readable ciphertext...
 export async function encryptStreamedAttachment(plaintextStream: ReadableStream, ciphertextStream: WritableStream):
     Promise<IEncryptedFile> {
     // generate a full 12-bytes of IV, as it shouldn't matter if AES-GCM overflows
@@ -171,6 +194,16 @@ export async function encryptStreamedAttachment(plaintextStream: ReadableStream,
         },
     };
 }
+
+// See above for why this API shape is not idiomatic for the Streams API.  Rather than the method connecting a source
+// (readable) to a sink (writable), we should return a TransformStream which provides a writable which it turns into a
+// readable.  In other words, the API should expose its own source & sink, rather than trying to connect existing source
+// and sinks together.
+//
+// const decryptTransform = new DecryptTransform(info);
+// const writable = fs.createWriteStream();
+// const response = await fetch();
+// response.body.pipeThrough(decryptTransform).pipeTo(writable);
 
 export async function decryptStreamedAttachment(
     ciphertextStream: ReadableStream, plaintextStream: WritableStream, info: IEncryptedFile,
