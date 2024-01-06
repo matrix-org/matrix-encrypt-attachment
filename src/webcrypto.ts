@@ -103,6 +103,11 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
  * const writable = fs.createWriteStream();
  * const response = await fetch();
  * response.body.pipeThrough(encryptTransform).pipeTo(writable);
+ *
+ * N.B. 'extends TransformStream' requires ES6 target due to https://github.com/microsoft/TypeScript/issues/12949
+ * or perhaps https://www.npmjs.com/package/@webcomponents/webcomponentsjs#custom-elements-es5-adapterjs.
+ * Alternatively this could be a function which returns a TransformStream rather than extending one, but mandating ES6
+ * seems reasonable these days.
  */
 export class EncryptTransform extends TransformStream<Uint8Array, Uint8Array> {
     info?: IEncryptedFile;
@@ -196,6 +201,11 @@ export class EncryptTransform extends TransformStream<Uint8Array, Uint8Array> {
  * const writable = fs.createWriteStream();
  * const response = await fetch();
  * response.body.pipeThrough(decryptTransform).pipeTo(writable);
+ *
+ * N.B. 'extends TransformStream' requires ES6 target due to https://github.com/microsoft/TypeScript/issues/12949
+ * or perhaps https://www.npmjs.com/package/@webcomponents/webcomponentsjs#custom-elements-es5-adapterjs.
+ * Alternatively this could be a function which returns a TransformStream rather than extending one, but mandating ES6
+ * seems reasonable these days.
  */
 export class DecryptTransform extends TransformStream<Uint8Array, Uint8Array> {
     info: IEncryptedFile;
