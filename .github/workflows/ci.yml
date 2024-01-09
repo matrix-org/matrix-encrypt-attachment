@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Install deps
@@ -26,9 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Install deps
@@ -40,21 +40,21 @@ jobs:
         run: yarn test:browser
 
       - name: Switch to Node 16
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '16'
       - name: Test Node 16
         run: yarn test:nodejs
 
       - name: Switch to Node 14
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '14'
       - name: Test Node 14
         run: yarn test:nodejs
 
       - name: Switch to Node 12
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '12'
       - name: Test Node 12
@@ -67,11 +67,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           persist-credentials: false      
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Install deps
