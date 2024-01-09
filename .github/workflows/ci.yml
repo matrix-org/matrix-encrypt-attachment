@@ -34,8 +34,8 @@ jobs:
       - name: Lint
         run: yarn lint
 
-  build-and-test:
-    name: 'Build and Test'
+  build:
+    name: 'Build'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,37 +59,83 @@ jobs:
       - name: Install deps
         if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+
       - name: Build
         run: yarn build
 
-      - name: Test browsers
+      - name: Store lib
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib
+          path: lib/
+
+  test-browser:
+    name: 'Test - browser'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node_modules
+        id: cache-node_modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node_modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+      - name: Install deps
+        if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Restore lib
+        uses: actions/download-artifact@v4
+        with:
+          name: lib
+
+      - name: Test
         run: yarn test:browser
 
-      - name: Switch to Node 16
+  test-nodejs:
+    name: 'Test - Node.js'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [12, 14, 16]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: '16'
-      - name: Test Node 16
-        run: yarn test:nodejs
-
-      - name: Switch to Node 14
-        uses: actions/setup-node@v4
+          node-version: ${{ matrix.version }}
+      - name: Cache node_modules
+        id: cache-node_modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node_modules
         with:
-          node-version: '14'
-      - name: Test Node 14
-        run: yarn test:nodejs
+          path: node_modules
+          key: ${{ runner.os }}-${{ matrix.version }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+      - name: Install deps
+        if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
 
-      - name: Switch to Node 12
-        uses: actions/setup-node@v4
+      - name: Restore lib
+        uses: actions/download-artifact@v4
         with:
-          node-version: '12'
-      - name: Test Node 12
-        run: yarn test:nodejs
+          name: lib
 
+      - name: Test
+        run: yarn test:nodejs
+      
   release:
     name: Semantic release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [lint, build-and-test]
+    needs: [lint, build, test-browser, test-nodejs]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -115,6 +161,12 @@ jobs:
       - name: Install deps
         if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+
+      - name: Restore lib
+        uses: actions/download-artifact@v4
+        with:
+          name: lib
+
       - name: Release
         run: yarn release
         env:
