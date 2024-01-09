@@ -96,6 +96,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lib
+          path: lib/
 
       - name: Test
         run: yarn test:browser
@@ -130,6 +131,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lib
+          path: lib/
 
       - name: Test
         run: yarn test:nodejs
@@ -168,6 +170,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: lib
+          path: lib/
 
       - name: Release
         run: yarn release
