@@ -71,6 +71,7 @@ jobs:
 
   test-browser:
     name: 'Test - browser'
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -101,6 +102,7 @@ jobs:
 
   test-nodejs:
     name: 'Test - Node.js'
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
