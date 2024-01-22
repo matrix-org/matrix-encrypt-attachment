@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
-    "@commitlint/cli": "^16.0.2",
+    "@commitlint/cli": "^18.5.0",
     "@commitlint/config-conventional": "^16.0.0",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
