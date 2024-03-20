@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import crypto from 'crypto';
-import { IEncryptedFile, IEncryptedFileJWK } from '.';
+import crypto from "crypto";
+
+import { IEncryptedFile, IEncryptedFileJWK } from ".";
 
 export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
     data: ArrayBuffer;
@@ -32,28 +33,28 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
 
     // Export the Key as JWK.
     const exportedKey: IEncryptedFileJWK = {
-        kty: 'oct',
-        key_ops: ['encrypt', 'decrypt'],
-        alg: 'A256CTR',
+        kty: "oct",
+        key_ops: ["encrypt", "decrypt"],
+        alg: "A256CTR",
         // node 14+ supports base64url encoding directly, but node 12 doesn't so we implement the mapping ourselves
-        k: Buffer.from(cryptoKey).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''), // URL safe base64 without padding
+        k: Buffer.from(cryptoKey).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ""), // URL safe base64 without padding
         ext: true,
     };
 
     // Encrypt the input Buffer.
-    const cipher = crypto.createCipheriv('aes-256-ctr', cryptoKey, ivArray);
+    const cipher = crypto.createCipheriv("aes-256-ctr", cryptoKey, ivArray);
     const ciphertextBuffer = Buffer.concat([
         cipher.update(plaintextBuffer),
         cipher.final(),
     ]);
 
     // SHA-256 the encrypted data.
-    const sha256Buffer = crypto.createHash('sha256').update(ciphertextBuffer).digest();
+    const sha256Buffer = crypto.createHash("sha256").update(ciphertextBuffer).digest();
 
     return {
         data: ciphertextBuffer,
         info: {
-            v: 'v2',
+            v: "v2",
             key: exportedKey,
             iv: encodeBase64(ivArray),
             hashes: {
@@ -67,11 +68,11 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
 export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buffer {
     if (info === undefined || info.key === undefined || info.iv === undefined ||
         info.hashes === undefined || info.hashes.sha256 === undefined) {
-        throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
+        throw new Error("Invalid info. Missing info.key, info.iv or info.hashes.sha256 key");
     }
 
-    if (info.v !== 'v2') {
-        throw new Error(`Unsupported protocol version: ${info.v ?? 'v0'}`);
+    if (info.v !== "v2") {
+        throw new Error(`Unsupported protocol version: ${info.v ?? "v0"}`);
     }
 
     const expectedSha256base64 = info.hashes.sha256;
@@ -79,8 +80,8 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
     // Convert from JWK to openssl algorithm
     // See https://www.w3.org/2012/webcrypto/wiki/KeyWrap_Proposal#JSON_Web_Key
     const algorithms = {
-        'oct': {
-            'A256CTR': 'aes-256-ctr',
+        "oct": {
+            "A256CTR": "aes-256-ctr",
         },
     };
 
@@ -88,17 +89,17 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
 
     if (!alg) {
         throw new Error(
-            `Unsupported key type/algorithm: ` +
+            "Unsupported key type/algorithm: " +
             `key.kty = ${info.key.kty}, kry.alg = ${info.key.alg}`);
     }
 
     const key = decodeBase64(info.key.k);
 
     // Calculate SHA 256 hash, encode as base64 without padding
-    const hashDigestBase64 = encodeBase64(crypto.createHash('sha256').update(dataBuffer).digest());
+    const hashDigestBase64 = encodeBase64(crypto.createHash("sha256").update(dataBuffer).digest());
 
     if (hashDigestBase64 !== expectedSha256base64) {
-        throw new Error('Unexpected sha256 hash of encrypted data');
+        throw new Error("Unexpected sha256 hash of encrypted data");
     }
 
     const iv = decodeBase64(info.iv);
@@ -112,7 +113,7 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
 }
 
 export function encodeBase64(uint8Array: Uint8Array): string {
-    const padded = Buffer.from(uint8Array).toString('base64');
+    const padded = Buffer.from(uint8Array).toString("base64");
 
     // remove padding
     const inputLength = uint8Array.length;
@@ -123,6 +124,6 @@ export function encodeBase64(uint8Array: Uint8Array): string {
 
 export function decodeBase64(base64: string): Uint8Array {
     // add padding if needed
-    const paddedBase64 = base64 + '==='.slice(0, (4 - base64.length % 4) % 4);
-    return Buffer.from(paddedBase64, 'base64');
+    const paddedBase64 = base64 + "===".slice(0, (4 - base64.length % 4) % 4);
+    return Buffer.from(paddedBase64, "base64");
 }

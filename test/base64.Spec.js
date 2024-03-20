@@ -28,13 +28,13 @@ function assertEq(got, want) {
     }
 }
 
-describe('Base64', function() {
+describe("Base64", function() {
     const testVectors = [
-        [[], ''],
-        [[255], '/w'],
-        [[255, 255], '//8'],
-        [[255, 255, 255], '////'],
-        [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'AAECAwQFBgcICQ'],
+        [[], ""],
+        [[255], "/w"],
+        [[255, 255], "//8"],
+        [[255, 255, 255], "////"],
+        [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "AAECAwQFBgcICQ"],
     ];
 
     testVectors.forEach(function(vector) {

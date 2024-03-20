@@ -22,8 +22,8 @@ function assertEq(got, want) {
     }
 }
 
-describe('EncryptAttachment', function() {
-    const testVectors = ['', 'SGVsbG8sIFdvcmxk'];
+describe("EncryptAttachment", function() {
+    const testVectors = ["", "SGVsbG8sIFdvcmxk"];
 
     testVectors.forEach(function(want) {
         it(`roundtrips ${JSON.stringify(want)}`, function() {
