@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as webcrypto from './webcrypto';
-import * as nodejs from './nodejs';
+import * as webcrypto from "./webcrypto";
+import * as nodejs from "./nodejs";
 
-const hasWebcrypto = !!(typeof window !== 'undefined' && window.crypto?.subtle);
+const hasWebcrypto = !!(typeof window !== "undefined" && window.crypto?.subtle);
 
 /**
  * Represents an `EncryptedFile` as described by https://spec.matrix.org/v1.1/client-server-api/#extensions-to-mroommessage-msgtypes

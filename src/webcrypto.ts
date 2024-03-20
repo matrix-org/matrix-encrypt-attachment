@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { IEncryptedFile, IEncryptedFileJWK } from '.';
+import { IEncryptedFile, IEncryptedFileJWK } from ".";
 
 export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
@@ -27,21 +27,21 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     window.crypto.getRandomValues(ivArray.subarray(0, 8));
     // Load the encryption key.
     const cryptoKey = await window.crypto.subtle.generateKey(
-        { 'name': 'AES-CTR', 'length': 256 }, true, ['encrypt', 'decrypt'],
+        { "name": "AES-CTR", "length": 256 }, true, ["encrypt", "decrypt"],
     );
     // Export the Key as JWK.
-    const exportedKey = await window.crypto.subtle.exportKey('jwk', cryptoKey);
+    const exportedKey = await window.crypto.subtle.exportKey("jwk", cryptoKey);
     // Encrypt the input ArrayBuffer.
     // Use half of the iv as the counter by setting the "length" to 64.
     const ciphertextBuffer = await window.crypto.subtle.encrypt(
-        { name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, plaintextBuffer,
+        { name: "AES-CTR", counter: ivArray, length: 64 }, cryptoKey, plaintextBuffer,
     );
     // SHA-256 the encrypted data.
-    const sha256Buffer = await window.crypto.subtle.digest('SHA-256', ciphertextBuffer);
+    const sha256Buffer = await window.crypto.subtle.digest("SHA-256", ciphertextBuffer);
     return {
         data: ciphertextBuffer,
         info: {
-            v: 'v2',
+            v: "v2",
             key: exportedKey as IEncryptedFileJWK,
             iv: encodeBase64(ivArray),
             hashes: {
@@ -54,7 +54,7 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
 export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
     if (info === undefined || info.key === undefined || info.iv === undefined
         || info.hashes === undefined || info.hashes.sha256 === undefined) {
-        throw new Error('Invalid info. Missing info.key, info.iv or info.hashes.sha256 key');
+        throw new Error("Invalid info. Missing info.key, info.iv or info.hashes.sha256 key");
     }
 
     if (info.v && !info.v.match(/^v[1-2]$/)) {
@@ -65,14 +65,14 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
     const expectedSha256base64 = info.hashes.sha256;
     // Load the AES from the "key" key of the inf bao object.
     const cryptoKey = await window.crypto.subtle.importKey(
-        'jwk', info.key, { 'name': 'AES-CTR' }, false, ['encrypt', 'decrypt'],
+        "jwk", info.key, { "name": "AES-CTR" }, false, ["encrypt", "decrypt"],
     );
-    const digestResult = await window.crypto.subtle.digest('SHA-256', ciphertextBuffer);
+    const digestResult = await window.crypto.subtle.digest("SHA-256", ciphertextBuffer);
     if (encodeBase64(new Uint8Array(digestResult)) != expectedSha256base64) {
-        throw new Error('Mismatched SHA-256 digest');
+        throw new Error("Mismatched SHA-256 digest");
     }
     let counterLength: number;
-    if (info.v == 'v1' || info.v == 'v2') {
+    if (info.v == "v1" || info.v == "v2") {
         // Version 1 and 2 use a 64 bit counter.
         counterLength = 64;
     } else {
@@ -80,7 +80,7 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
         counterLength = 128;
     }
     return window.crypto.subtle.decrypt(
-        { name: 'AES-CTR', counter: ivArray, length: counterLength }, cryptoKey, ciphertextBuffer,
+        { name: "AES-CTR", counter: ivArray, length: counterLength }, cryptoKey, ciphertextBuffer,
     );
 }
 
@@ -99,7 +99,7 @@ export function encodeBase64(uint8Array: Uint8Array): string {
 
 export function decodeBase64(base64: string): Uint8Array {
     // Pad the base64 up to the next multiple of 4.
-    const paddedBase64 = base64 + '==='.slice(0, (4 - base64.length % 4) % 4);
+    const paddedBase64 = base64 + "===".slice(0, (4 - base64.length % 4) % 4);
     // Decode the base64 as a misinterpreted Latin-1 string.
     // window.atob returns a unicode string with codepoints in the range 0-255.
     const latin1String = window.atob(paddedBase64);
