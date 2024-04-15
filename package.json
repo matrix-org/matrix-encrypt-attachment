@@ -59,7 +59,7 @@
     "karma-firefox-launcher": "^2.1.2",
     "karma-mocha": "^2.0.1",
     "mocha": "^10.2.0",
-    "semantic-release": "^19.0.2",
+    "semantic-release": "^23.0.8",
     "tsify": "^5.0.4",
     "typescript": "^5.4.2"
   },
