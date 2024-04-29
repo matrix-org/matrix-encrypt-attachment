@@ -13,7 +13,6 @@
     "LICENSE"
   ],
   "scripts": {
-    "prepublishOnly": "yarn build",
     "build": "yarn build:node && yarn build:browser",
     "build:node": "tsc",
     "build:browser": "browserify --standalone MatrixEncryptAttachment -d src/webcrypto.ts -p [ tsify -p ./tsconfig.json ] | exorcist lib/browser-encrypt-attachment.js.map > lib/browser-encrypt-attachment.js",
@@ -64,6 +63,6 @@
     "typescript": "^5.4.2"
   },
   "engines": {
-    "node": ">=12.0"
+    "node": ">=16.0"
   }
 }
