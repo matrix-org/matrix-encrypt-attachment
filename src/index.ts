@@ -102,6 +102,9 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
         : nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info);
 }
 
+export const EncryptTransform = hasWebcrypto ?? webcrypto.EncryptTransform;
+export const DecryptTransform = hasWebcrypto ?? webcrypto.DecryptTransform;
+
 /**
  * Encode a typed array of uint8 as unpadded base64.
  * @param {Uint8Array} uint8Array The data to encode.
