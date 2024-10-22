@@ -54,7 +54,7 @@
     "eslint-plugin-unicorn": "^51.0.1",
     "exorcist": "^2.0.0",
     "husky": "^7.0.4",
-    "karma": "^6.4.1",
+    "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.1.1",
     "karma-firefox-launcher": "^2.1.2",
     "karma-mocha": "^2.0.1",
