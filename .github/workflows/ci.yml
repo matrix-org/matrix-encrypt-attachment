@@ -65,6 +65,20 @@ jobs:
       - name: Test browsers
         run: yarn test:browser
 
+      - name: Switch to Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Test Node 20
+        run: yarn test:nodejs
+
+      - name: Switch to Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Test Node 18
+        run: yarn test:nodejs
+
       - name: Switch to Node 16
         uses: actions/setup-node@v4
         with:
