@@ -65,6 +65,9 @@ jobs:
       - name: Test browsers
         run: yarn test:browser
 
+      - name: Test Node from .nvmrc
+        run: yarn test:nodejs
+
       - name: Release dry-run
         run: yarn release --dry-run --no-ci --branches "${{ github.base_ref || github.ref_name }}"
         env:
