@@ -65,6 +65,12 @@ jobs:
       - name: Test browsers
         run: yarn test:browser
 
+      - name: Release dry-run
+        run: yarn release --dry-run --no-ci --branches "$GITHUB_HEAD_REF"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Switch to Node 20
         uses: actions/setup-node@v4
         with:
@@ -99,12 +105,6 @@ jobs:
           node-version: '12'
       - name: Test Node 12
         run: yarn test:nodejs
-
-      - name: Release dry-run
-        run: yarn release --dry-run --no-ci --branches "$GITHUB_HEAD_REF"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}        
 
   release:
     name: Semantic release
