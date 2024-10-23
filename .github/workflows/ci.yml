@@ -100,6 +100,12 @@ jobs:
       - name: Test Node 12
         run: yarn test:nodejs
 
+      - name: Release dry-run
+        run: yarn release --dry-run --no-ci --branches "$GITHUB_HEAD_REF"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}        
+
   release:
     name: Semantic release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
