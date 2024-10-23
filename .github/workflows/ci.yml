@@ -141,7 +141,7 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Release dry-run
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
-        run: yarn release --dry-run --no-ci --branches "${{ github.base_ref || github.ref_name }}"
+        run: yarn release --dry-run --no-ci --branches "${{ github.ref_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
