@@ -65,6 +65,9 @@ jobs:
       - name: Test browsers
         run: yarn test:browser
 
+      - name: Test Node from .nvmrc
+        run: yarn test:nodejs
+
       - name: Switch to Node 20
         uses: actions/setup-node@v4
         with:
