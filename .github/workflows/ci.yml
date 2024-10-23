@@ -68,6 +68,12 @@ jobs:
       - name: Test Node from .nvmrc
         run: yarn test:nodejs
 
+      - name: Release dry-run
+        run: yarn release --dry-run --no-ci --branches "${{ github.base_ref || github.ref_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Switch to Node 20
         uses: actions/setup-node@v4
         with:
