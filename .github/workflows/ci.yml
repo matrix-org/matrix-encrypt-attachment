@@ -9,6 +9,8 @@ jobs:
   lint:
     name: 'Lint'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +39,8 @@ jobs:
   build-and-test:
     name: 'Build and Test'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -68,11 +72,6 @@ jobs:
       - name: Test Node from .nvmrc
         run: yarn test:nodejs
 
-      - name: Release dry-run
-        run: yarn release --dry-run --no-ci --branches "${{ github.base_ref || github.ref_name }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Switch to Node 20
         uses: actions/setup-node@v4
@@ -111,9 +110,11 @@ jobs:
 
   release:
     name: Semantic release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [lint, build-and-test]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -138,7 +139,14 @@ jobs:
       - name: Install deps
         if: steps.cache-node_modules.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Release dry-run
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        run: yarn release --dry-run --no-ci --branches "${{ github.base_ref || github.ref_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
