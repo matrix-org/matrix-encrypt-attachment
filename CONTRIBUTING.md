@@ -46,6 +46,19 @@ Please ensure your changes match the cosmetic style of the existing project,
 and **never** mix cosmetic and functional changes in the same commit, as it
 makes it horribly hard to review otherwise.
 
+## Releasing
+
+1. Open a PR that bumps `version` in `package.json` (e.g.
+   `yarn version --new-version 1.2.3 --no-git-tag-version`) and get it merged.
+2. Create a GitHub Release with a new tag `v<version>` on `main`, e.g.
+   `gh release create v1.2.3 --target main --generate-notes`.
+   For a prerelease version (e.g. `v1.2.3-rc.1`), also pass `--prerelease`;
+   it is then published to npm under the `next` dist-tag instead of `latest`.
+3. Publishing the release triggers the `Release` workflow, which checks the
+   release commit is on `main`, the tag matches `package.json`, and the
+   GitHub pre-release flag matches the version, then runs the tests and
+   publishes to npm.
+
 ## Sign off
 
 In order to have a concrete record that your contribution is intentional

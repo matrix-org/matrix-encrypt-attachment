@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # for npm provenance
+
+jobs:
+  publish:
+    name: 'Publish to npm'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # needed to check the release commit is on main
+      - name: Check release commit is on main
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Release commit $GITHUB_SHA is not on main"
+            exit 1
+          fi
+      - name: Setup node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false # don't risk publishing from a poisoned cache
+      - name: Check tag matches package.json version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Release tag $TAG does not match package.json version $VERSION"
+            exit 1
+          fi
+      - name: Determine npm dist-tag
+        id: dist-tag
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          # A semver prerelease version (e.g. v1.1.0-rc.1) must be marked as a
+          # GitHub pre-release, and vice versa, so a prerelease never becomes `latest`.
+          case "$TAG" in
+            *-*) IS_SEMVER_PRERELEASE=true ;;
+            *) IS_SEMVER_PRERELEASE=false ;;
+          esac
+          if [ "$PRERELEASE" != "$IS_SEMVER_PRERELEASE" ]; then
+            echo "::error::Release $TAG has GitHub pre-release=$PRERELEASE but semver prerelease=$IS_SEMVER_PRERELEASE"
+            exit 1
+          fi
+          if [ "$PRERELEASE" = "true" ]; then
+            echo "tag=next" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install deps
+        run: yarn install --frozen-lockfile
+      - name: Test
+        run: yarn test
+      - name: Publish
+        run: npm publish --provenance --access public --tag "$DIST_TAG"
+        env:
+          DIST_TAG: ${{ steps.dist-tag.outputs.tag }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

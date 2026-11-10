@@ -21,8 +21,7 @@
     "test:browser": "karma start $KARMAFLAGS",
     "test:nodejs": "mocha --require ./test/nodeHelper.js",
     "lint": "yarn lint:style",
-    "lint:style": "eslint src test",
-    "release": "yarn semantic-release"
+    "lint:style": "eslint src test"
   },
   "repository": {
     "type": "git",
@@ -38,10 +37,6 @@
   },
   "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
-    "@commitlint/cli": "^16.0.2",
-    "@commitlint/config-conventional": "^16.0.0",
-    "@semantic-release/changelog": "^6.0.1",
-    "@semantic-release/git": "^10.0.1",
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
@@ -53,13 +48,11 @@
     "eslint-plugin-matrix-org": "^1.2.1",
     "eslint-plugin-unicorn": "^51.0.1",
     "exorcist": "^2.0.0",
-    "husky": "^7.0.4",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.1.1",
     "karma-firefox-launcher": "^2.1.2",
     "karma-mocha": "^2.0.1",
     "mocha": "^10.2.0",
-    "semantic-release": "^24.1.3",
     "tsify": "^5.0.4",
     "typescript": "^5.4.2"
   },

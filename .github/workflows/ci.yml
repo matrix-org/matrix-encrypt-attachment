@@ -75,13 +75,6 @@ jobs:
       - name: Test Node from .nvmrc
         run: yarn test:nodejs
 
-      - name: Release dry-run
-        run: yarn release --dry-run --no-ci --branches "$RELEASE_BRANCH"
-        env:
-          RELEASE_BRANCH: ${{ github.base_ref || github.ref_name }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Switch to Node 20
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -116,38 +109,3 @@ jobs:
           node-version: '12'
       - name: Test Node 12
         run: yarn test:nodejs
-
-  release:
-    name: Semantic release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [lint, build-and-test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-        with:
-          persist-credentials: false      
-      - name: Setup node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version-file: '.nvmrc'
-      - name: Cache node_modules
-        id: cache-node_modules
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        env:
-          cache-name: cache-node_modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install deps
-        if: steps.cache-node_modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: Release
-        run: yarn release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}        

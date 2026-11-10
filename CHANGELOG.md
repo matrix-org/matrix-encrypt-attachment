@@ -1,3 +1,7 @@
+# Changelog
+
+Release notes for versions after 1.0.3 are published on [GitHub Releases](https://github.com/matrix-org/matrix-encrypt-attachment/releases).
+
 ## [1.0.3](https://github.com/matrix-org/matrix-encrypt-attachment/compare/v1.0.2...v1.0.3) (2022-04-01)
 
 
