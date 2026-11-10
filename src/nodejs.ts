@@ -19,7 +19,7 @@ import crypto from "crypto";
 import { IEncryptedFile, IEncryptedFileJWK } from ".";
 
 export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
-    data: ArrayBuffer;
+    data: Buffer;
     info: IEncryptedFile;
 }> {
     // Generate an IV where the first 8 bytes are random and the high 8 bytes
@@ -79,7 +79,7 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
 
     // Convert from JWK to openssl algorithm
     // See https://www.w3.org/2012/webcrypto/wiki/KeyWrap_Proposal#JSON_Web_Key
-    const algorithms = {
+    const algorithms: Record<string, Record<string, string>> = {
         "oct": {
             "A256CTR": "aes-256-ctr",
         },

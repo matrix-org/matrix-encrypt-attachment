@@ -87,8 +87,13 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
     info: IEncryptedFile;
 }> {
+    // On Node.js the data is actually returned as a Buffer (a Uint8Array) rather than an ArrayBuffer.
+    // The cast preserves the existing public type and runtime behaviour.
     return hasWebcrypto ? webcrypto.encryptAttachment(plaintextBuffer)
-        : nodejs.encryptAttachment(Buffer.from(plaintextBuffer));
+        : nodejs.encryptAttachment(Buffer.from(plaintextBuffer)) as unknown as Promise<{
+            data: ArrayBuffer;
+            info: IEncryptedFile;
+        }>;
 }
 
 /**
@@ -98,8 +103,10 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
  * @return {Promise<ArrayBuffer>} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
  */
 export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
+    // On Node.js the data is actually returned as a Buffer (a Uint8Array) rather than an ArrayBuffer.
+    // The cast preserves the existing public type and runtime behaviour.
     return hasWebcrypto ? webcrypto.decryptAttachment(ciphertextBuffer, info)
-        : nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info);
+        : nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info) as unknown as ArrayBuffer;
 }
 
 /**

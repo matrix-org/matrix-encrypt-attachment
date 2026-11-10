@@ -52,7 +52,7 @@
     "exorcist": "^2.0.0",
     "mocha": "^10.2.0",
     "tsify": "^5.0.4",
-    "typescript": "^5.4.2"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": ">=12.0"

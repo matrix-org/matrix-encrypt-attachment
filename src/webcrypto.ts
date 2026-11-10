@@ -80,14 +80,15 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
         counterLength = 128;
     }
     return window.crypto.subtle.decrypt(
-        { name: "AES-CTR", counter: ivArray, length: counterLength }, cryptoKey, ciphertextBuffer,
+        // decodeBase64() always returns a Uint8Array backed by a (non-shared) ArrayBuffer
+        { name: "AES-CTR", counter: ivArray as Uint8Array<ArrayBuffer>, length: counterLength }, cryptoKey, ciphertextBuffer,
     );
 }
 
 export function encodeBase64(uint8Array: Uint8Array): string {
     // Misinterpt the Uint8Array as Latin-1.
     // window.btoa expects a unicode string with codepoints in the range 0-255.
-    const latin1String = String.fromCharCode.apply(null, uint8Array);
+    const latin1String = String.fromCharCode.apply(null, uint8Array as unknown as number[]);
     // Use the builtin base64 encoder.
     const paddedBase64 = window.btoa(latin1String);
     // Calculate the unpadded length.
