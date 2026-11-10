@@ -62,6 +62,8 @@ jobs:
           fi
       - name: Install deps
         run: yarn install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps chromium firefox webkit
       - name: Test
         run: yarn test
       - name: Publish
