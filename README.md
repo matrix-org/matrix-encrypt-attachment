@@ -15,6 +15,7 @@ Previous versions of the protocol are not currently documented in the spec, and 
 | v0 | use all 128 bits of the counter |
 | v1 | use only 64 bits of the counter |
 | v2 (current) | use only 64 bits and also zero out the other half to maximise the space before it wraps |
+| org.matrix.msc4016.v3 | streaming file transfers (AES-GCM and 96-bit IV) |
 
 ## Encryption
 
@@ -23,6 +24,7 @@ The library will encrypt to the following protocol versions:
 | Protocol | Browser | Node.js |
 | --- | --- | --- |
 | Encrypt | v2 | v2 |
+| Encrypt | org.matrix.msc4016.v3 | - |
 
 ## Decryption
 
@@ -33,3 +35,5 @@ The library supports decryption of the following protocol versions:
 | Decrypt v0 | ✅ | ❌ |
 | Decrypt v1 | ✅ | ❌ |
 | Decrypt v2 | ✅ | ✅ |
+| Decrypt org.matrix.msc4016.v3 | ✅ | ❌ |
+
