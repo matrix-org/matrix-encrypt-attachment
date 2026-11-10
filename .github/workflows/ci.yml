@@ -69,6 +69,9 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps chromium firefox webkit
+
       - name: Test browsers
         run: yarn test:browser
 
