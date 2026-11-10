@@ -44,10 +44,7 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
 
     // Encrypt the input Buffer.
     const cipher = crypto.createCipheriv("aes-256-ctr", cryptoKey, ivArray);
-    const ciphertextBuffer = Buffer.concat([
-        cipher.update(plaintextBuffer),
-        cipher.final(),
-    ]);
+    const ciphertextBuffer = Buffer.concat([cipher.update(plaintextBuffer), cipher.final()]);
 
     // SHA-256 the encrypted data.
     const sha256Buffer = crypto.createHash("sha256").update(ciphertextBuffer).digest();
@@ -67,8 +64,13 @@ export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
 
 // this is based on https://github.com/matrix-org/matrix-content-scanner/blob/main/src/decrypt.js
 export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buffer {
-    if (info === undefined || info.key === undefined || info.iv === undefined ||
-        info.hashes === undefined || info.hashes.sha256 === undefined) {
+    if (
+        info === undefined ||
+        info.key === undefined ||
+        info.iv === undefined ||
+        info.hashes === undefined ||
+        info.hashes.sha256 === undefined
+    ) {
         throw new Error("Invalid info. Missing info.key, info.iv or info.hashes.sha256 key");
     }
 
@@ -81,17 +83,15 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
     // Convert from JWK to openssl algorithm
     // See https://www.w3.org/2012/webcrypto/wiki/KeyWrap_Proposal#JSON_Web_Key
     const algorithms: Record<string, Record<string, string>> = {
-        "oct": {
-            "A256CTR": "aes-256-ctr",
+        oct: {
+            A256CTR: "aes-256-ctr",
         },
     };
 
     const alg = algorithms[info.key.kty] ? algorithms[info.key.kty][info.key.alg] : undefined;
 
     if (!alg) {
-        throw new Error(
-            "Unsupported key type/algorithm: " +
-            `key.kty = ${info.key.kty}, kry.alg = ${info.key.alg}`);
+        throw new Error("Unsupported key type/algorithm: " + `key.kty = ${info.key.kty}, kry.alg = ${info.key.alg}`);
     }
 
     const key = decodeBase64(info.key.k);
@@ -107,10 +107,7 @@ export function decryptAttachment(dataBuffer: Buffer, info: IEncryptedFile): Buf
 
     const decipher = crypto.createDecipheriv(alg, key, iv);
 
-    return Buffer.concat([
-        decipher.update(dataBuffer),
-        decipher.final(),
-    ]);
+    return Buffer.concat([decipher.update(dataBuffer), decipher.final()]);
 }
 
 export function encodeBase64(uint8Array: Uint8Array): string {
@@ -118,13 +115,13 @@ export function encodeBase64(uint8Array: Uint8Array): string {
 
     // remove padding
     const inputLength = uint8Array.length;
-    const outputLength = 4 * Math.floor((inputLength + 2) / 3) + (inputLength + 2) % 3 - 2;
+    const outputLength = 4 * Math.floor((inputLength + 2) / 3) + ((inputLength + 2) % 3) - 2;
     // Return the unpadded base64.
     return padded.slice(0, outputLength);
 }
 
 export function decodeBase64(base64: string): Uint8Array {
     // add padding if needed
-    const paddedBase64 = base64 + "===".slice(0, (4 - base64.length % 4) % 4);
+    const paddedBase64 = base64 + "===".slice(0, (4 - (base64.length % 4)) % 4);
     return Buffer.from(paddedBase64, "base64");
 }

@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   lint:
-    name: 'Lint'
+    name: "Lint"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -21,7 +21,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
       - name: Cache node_modules
         id: cache-node_modules
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -41,7 +41,7 @@ jobs:
         run: yarn lint
 
   build-and-test:
-    name: 'Build and Test'
+    name: "Build and Test"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,7 +51,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"
       - name: Cache node_modules
         id: cache-node_modules
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -82,34 +82,34 @@ jobs:
       - name: Switch to Node 20
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '20'
+          node-version: "20"
       - name: Test Node 20
         run: yarn test:nodejs
 
       - name: Switch to Node 18
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '18'
+          node-version: "18"
       - name: Test Node 18
         run: yarn test:nodejs
 
       - name: Switch to Node 16
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '16'
+          node-version: "16"
       - name: Test Node 16
         run: yarn test:nodejs
 
       - name: Switch to Node 14
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '14'
+          node-version: "14"
       - name: Test Node 14
         run: yarn test:nodejs
 
       - name: Switch to Node 12
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '12'
+          node-version: "12"
       - name: Test Node 12
         run: yarn test:nodejs

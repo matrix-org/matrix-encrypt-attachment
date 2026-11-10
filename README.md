@@ -10,10 +10,10 @@ This project builds on and deprecates [`browser-encrypt-attachment`](https://git
 
 Previous versions of the protocol are not currently documented in the spec, and are described here for reference:
 
-| Protocol | Description |
-| --- | --- |
-| v0 | use all 128 bits of the counter |
-| v1 | use only 64 bits of the counter |
+| Protocol     | Description                                                                             |
+| ------------ | --------------------------------------------------------------------------------------- |
+| v0           | use all 128 bits of the counter                                                         |
+| v1           | use only 64 bits of the counter                                                         |
 | v2 (current) | use only 64 bits and also zero out the other half to maximise the space before it wraps |
 
 ## Encryption
@@ -21,15 +21,15 @@ Previous versions of the protocol are not currently documented in the spec, and 
 The library will encrypt to the following protocol versions:
 
 | Protocol | Browser | Node.js |
-| --- | --- | --- |
-| Encrypt | v2 | v2 |
+| -------- | ------- | ------- |
+| Encrypt  | v2      | v2      |
 
 ## Decryption
 
 The library supports decryption of the following protocol versions:
 
-| Protocol | Browser | Node.js |
-| --- | --- | --- |
-| Decrypt v0 | ✅ | ❌ |
-| Decrypt v1 | ✅ | ❌ |
-| Decrypt v2 | ✅ | ✅ |
+| Protocol   | Browser | Node.js |
+| ---------- | ------- | ------- |
+| Decrypt v0 | ✅      | ❌      |
+| Decrypt v1 | ✅      | ❌      |
+| Decrypt v2 | ✅      | ✅      |

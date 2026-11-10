@@ -27,7 +27,7 @@ function assertEq(got, want) {
     }
 }
 
-describe("Base64", function() {
+describe("Base64", function () {
     const testVectors = [
         [[], ""],
         [[255], "/w"],
@@ -36,18 +36,18 @@ describe("Base64", function() {
         [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "AAECAwQFBgcICQ"],
     ];
 
-    testVectors.forEach(function(vector) {
+    testVectors.forEach(function (vector) {
         const input = vector[0];
         const want = vector[1];
-        it(`encodes ${JSON.stringify(input)} correctly`, function() {
+        it(`encodes ${JSON.stringify(input)} correctly`, function () {
             const got = MatrixEncryptAttachment.encodeBase64(new Uint8Array(input));
             assertEq(got, want);
         });
     });
-    testVectors.forEach(function(vector) {
+    testVectors.forEach(function (vector) {
         const input = vector[1];
         const want = vector[0];
-        it(`decodes ${JSON.stringify(input)} correctly`, function() {
+        it(`decodes ${JSON.stringify(input)} correctly`, function () {
             const got = Array.prototype.slice.call(MatrixEncryptAttachment.decodeBase64(input));
             assertEq(got, want);
         });
