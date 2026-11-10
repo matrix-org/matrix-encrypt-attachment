@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// eslint-disable-next-line valid-jsdoc
 /**
  * Test if two things are equal after JSON stringification.
  * The arguments must be numbers, strings or arrays otherwise the behaviour is

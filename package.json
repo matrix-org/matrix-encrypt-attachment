@@ -20,8 +20,8 @@
     "test": "yarn lint && yarn build && yarn test:nodejs && yarn test:browser",
     "test:browser": "wtr",
     "test:nodejs": "mocha --require ./test/nodeHelper.js",
-    "lint": "yarn lint:style",
-    "lint:style": "eslint src test"
+    "lint": "oxlint && oxfmt --check",
+    "format": "oxfmt --write"
   },
   "repository": {
     "type": "git",
@@ -38,19 +38,14 @@
   "homepage": "https://github.com/matrix-org/matrix-encrypt-attachment#readme",
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
     "@web/test-runner": "^1.0.1",
     "@web/test-runner-playwright": "^1.0.1",
     "browserify": "^17.0.0",
-    "eslint": "^8.2.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-matrix-org": "^1.2.1",
-    "eslint-plugin-unicorn": "^51.0.1",
     "exorcist": "^2.0.0",
     "mocha": "^10.2.0",
+    "oxfmt": "^0.78.0",
+    "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "^7.0.2006",
     "tsify": "^5.0.4",
     "typescript": "^6.0.3"
   },

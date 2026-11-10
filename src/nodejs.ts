@@ -18,6 +18,7 @@ import crypto from "crypto";
 
 import { IEncryptedFile, IEncryptedFileJWK } from ".";
 
+// oxlint-disable-next-line typescript/require-await -- async so that any errors are returned as a rejected promise
 export async function encryptAttachment(plaintextBuffer: Buffer): Promise<{
     data: Buffer;
     info: IEncryptedFile;

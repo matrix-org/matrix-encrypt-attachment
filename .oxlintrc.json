@@ -1,0 +1,95 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true,
+    "denyWarnings": true,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "browser": true,
+    "es2020": true
+  },
+  "ignorePatterns": ["lib/**"],
+  "rules": {
+    "curly": ["error", "multi-line"],
+    "prefer-const": "error",
+    "no-var": "error",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "none",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "new-cap": "error",
+    "no-array-constructor": "error",
+    "no-new-wrappers": "error",
+    "no-throw-literal": "error",
+    "no-extend-native": "error",
+    "no-extra-bind": "error",
+    "no-multi-str": "error",
+    "one-var": ["error", "never"],
+    "prefer-promise-reject-errors": "error",
+    "import/first": "error",
+    "unicorn/no-instanceof-array": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "typescript/explicit-function-return-type": "error",
+        "typescript/explicit-member-accessibility": "error",
+        "typescript/consistent-type-exports": "error",
+        "typescript/await-thenable": "error",
+        "typescript/no-array-delete": "error",
+        "typescript/no-base-to-string": "error",
+        "typescript/no-duplicate-type-constituents": "error",
+        "typescript/no-floating-promises": "error",
+        "typescript/no-for-in-array": "error",
+        "typescript/no-implied-eval": "error",
+        "typescript/no-misused-promises": "error",
+        "typescript/no-redundant-type-constituents": "error",
+        "typescript/no-unnecessary-type-assertion": "error",
+        "typescript/no-unsafe-argument": "error",
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-enum-comparison": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error",
+        "typescript/no-unsafe-unary-minus": "error",
+        "typescript/only-throw-error": "error",
+        "typescript/require-await": "error",
+        "typescript/restrict-plus-operands": "error",
+        "typescript/restrict-template-expressions": "error",
+        "typescript/unbound-method": "error"
+      }
+    },
+    {
+      "files": ["test/**/*.js"],
+      "env": {
+        "mocha": true
+      },
+      "globals": {
+        "MatrixEncryptAttachment": "readonly"
+      }
+    },
+    {
+      "files": ["test/nodeHelper.js", "web-test-runner.config.mjs"],
+      "env": {
+        "node": true
+      }
+    }
+  ]
+}
