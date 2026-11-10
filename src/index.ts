@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as webcrypto from "./webcrypto";
 import * as nodejs from "./nodejs";
+import * as webcrypto from "./webcrypto";
 
 const hasWebcrypto = !!(typeof window !== "undefined" && window.crypto?.subtle);
 
@@ -87,8 +87,14 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
     data: ArrayBuffer;
     info: IEncryptedFile;
 }> {
-    return hasWebcrypto ? webcrypto.encryptAttachment(plaintextBuffer)
-        : nodejs.encryptAttachment(Buffer.from(plaintextBuffer));
+    // On Node.js the data is actually returned as a Buffer (a Uint8Array) rather than an ArrayBuffer.
+    // The cast preserves the existing public type and runtime behaviour.
+    return hasWebcrypto
+        ? webcrypto.encryptAttachment(plaintextBuffer)
+        : (nodejs.encryptAttachment(Buffer.from(plaintextBuffer)) as unknown as Promise<{
+              data: ArrayBuffer;
+              info: IEncryptedFile;
+          }>);
 }
 
 /**
@@ -98,8 +104,11 @@ export async function encryptAttachment(plaintextBuffer: ArrayBuffer): Promise<{
  * @return {Promise<ArrayBuffer>} A promise that resolves with an ArrayBuffer when the attachment is decrypted.
  */
 export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEncryptedFile): Promise<ArrayBuffer> {
-    return hasWebcrypto ? webcrypto.decryptAttachment(ciphertextBuffer, info)
-        : nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info);
+    // On Node.js the data is actually returned as a Buffer (a Uint8Array) rather than an ArrayBuffer.
+    // The cast preserves the existing public type and runtime behaviour.
+    return hasWebcrypto
+        ? webcrypto.decryptAttachment(ciphertextBuffer, info)
+        : (nodejs.decryptAttachment(Buffer.from(ciphertextBuffer), info) as unknown as ArrayBuffer);
 }
 
 /**
@@ -108,8 +117,7 @@ export async function decryptAttachment(ciphertextBuffer: ArrayBuffer, info: IEn
  * @return {string} The base64 without padding.
  */
 export function encodeBase64(uint8Array: Uint8Array): string {
-    return hasWebcrypto ? webcrypto.encodeBase64(uint8Array)
-        : nodejs.encodeBase64(uint8Array);
+    return hasWebcrypto ? webcrypto.encodeBase64(uint8Array) : nodejs.encodeBase64(uint8Array);
 }
 
 /**
@@ -119,6 +127,5 @@ export function encodeBase64(uint8Array: Uint8Array): string {
  * @return {Uint8Array} The decoded data.
  */
 export function decodeBase64(base64: string): Uint8Array {
-    return hasWebcrypto ? webcrypto.decodeBase64(base64)
-        : nodejs.decodeBase64(base64);
+    return hasWebcrypto ? webcrypto.decodeBase64(base64) : nodejs.decodeBase64(base64);
 }

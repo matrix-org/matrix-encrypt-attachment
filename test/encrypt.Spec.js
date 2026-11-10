@@ -22,15 +22,16 @@ function assertEq(got, want) {
     }
 }
 
-describe("EncryptAttachment", function() {
+describe("EncryptAttachment", function () {
     const testVectors = ["", "SGVsbG8sIFdvcmxk"];
 
-    testVectors.forEach(function(want) {
-        it(`roundtrips ${JSON.stringify(want)}`, function() {
+    testVectors.forEach(function (want) {
+        it(`roundtrips ${JSON.stringify(want)}`, function () {
             return MatrixEncryptAttachment.encryptAttachment(MatrixEncryptAttachment.decodeBase64(want))
-                .then(function(encryptResult) {
+                .then(function (encryptResult) {
                     return MatrixEncryptAttachment.decryptAttachment(encryptResult.data, encryptResult.info);
-                }).then(function(decryptResult) {
+                })
+                .then(function (decryptResult) {
                     assertEq(MatrixEncryptAttachment.encodeBase64(new Uint8Array(decryptResult)), want);
                 });
         });

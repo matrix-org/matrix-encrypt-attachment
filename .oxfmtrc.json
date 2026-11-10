@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "tabWidth": 4,
+  "quoteProps": "consistent",
+  "trailingComma": "all",
+  "sortImports": true,
+  "sortPackageJson": false,
+  "ignorePatterns": ["CHANGELOG.md"],
+  "overrides": [
+    {
+      "files": ["*.json", "*.yml", "*.yaml", "*.md"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}
