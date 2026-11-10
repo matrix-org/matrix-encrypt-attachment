@@ -1964,9 +1964,9 @@ error-ex@^1.2.0, error-ex@^1.3.1:
     is-arrayish "^0.2.1"
 
 errorstacks@^2.4.1:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/errorstacks/-/errorstacks-2.4.2.tgz#19cc65d0d049abbd7fc3a5fd2a01054609ae0647"
-  integrity sha512-aQAkABfX+AsCxWtvh1KGIDkTiYyABsTtZkBb8cd9FWxNnEdrcFEsTxUfi9sc0Jc1mgHC2kW3UtJVadqSuMm/uQ==
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/errorstacks/-/errorstacks-2.4.1.tgz#05adf6de1f5b04a66f2c12cc0593e1be2b18cd0f"
+  integrity sha512-jE4i0SMYevwu/xxAuzhly/KTwtj0xDhbzB6m1xPImxTkw8wcCbgarOQPfCVMi5JKVyW7in29pNJCCJrry3Ynnw==
 
 es-abstract@^1.18.5:
   version "1.19.1"
